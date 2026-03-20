@@ -1,0 +1,89 @@
+waypoint_runner:
+  arrival_radius: 0.2   # [m]   position error threshold to consider "arrived"
+  yaw_threshold:  0.10   # [rad] yaw error threshold (~6 deg)
+  hold_duration:  0.0    # [s]   station-hold time after arriving before advancing
+  startup_delay:  5.0   # [s]   wait after node start before processing (0 = immediate)
+  rate:           10.0   # [Hz]  publish / check rate
+
+  # Sequence runs immediately. Controller starts disabled.
+  # Arm thrusters with an 'enable' waypoint, or from Foxglove:
+  #   Publish panel → topic /system_enable, type std_msgs/msg/Bool, {"data": true}
+
+  # ── Waypoint reference ─────────────────────────────────────────────────────
+  #
+  # All positions are in the odom (world) frame, ENU convention:
+  #   x = east / forward,  y = north / left,  z = up
+  #   yaw in radians: 0 = facing +x, positive = counter-clockwise
+  #   z negative = below the surface
+  #
+  # ┌─────────────┬──────────────────────────────────────────────────────────┐
+  # │ Type        │ Fields                                                   │
+  # ├─────────────┼──────────────────────────────────────────────────────────┤
+  # │ pose        │ x, y, z, yaw                                             │
+  # │ (default)   │ Drive to position with PID. Advances when               │
+  # │             │ pos_err < arrival_radius AND yaw_err < yaw_threshold,    │
+  # │             │ then holds for hold_duration seconds.                    │
+  # │             │ Example:                                                 │
+  # │             │   - {x: 1.0, y: 0.0, z: -2.0, yaw: 0.0}                │
+  # ├─────────────┼──────────────────────────────────────────────────────────┤
+  # │ enable      │ (no fields)                                              │
+  # │             │ Explicitly enable the controller and advance.            │
+  # │             │ Useful at sequence start or after raw_thrust.            │
+  # │             │ Example:                                                 │
+  # │             │   - {type: enable}                                       │
+  # ├─────────────┼──────────────────────────────────────────────────────────┤
+  # │ disable     │ (no fields)                                              │
+  # │             │ Explicitly disable the controller and advance.           │
+  # │             │ Thrusters go silent until an enable or pose waypoint.    │
+  # │             │ Example:                                                 │
+  # │             │   - {type: disable}                                      │
+  # ├─────────────┼──────────────────────────────────────────────────────────┤
+  # │ pause       │ duration  (seconds, required)                            │
+  # │             │ Disable controller (no thrust) for duration seconds,     │
+  # │             │ then re-enable and advance. Vehicle coasts freely.       │
+  # │             │ Example:                                                 │
+  # │             │   - {type: pause, duration: 3.0}                        │
+  # ├─────────────┼──────────────────────────────────────────────────────────┤
+  # │ hold        │ duration  (optional, omit or -1 = hold forever)          │
+  # │             │ Re-publish the last pose waypoint as desired_state.      │
+  # │             │ Useful for observing steady-state between steps.         │
+  # │             │ Example:                                                 │
+  # │             │   - {type: hold, duration: 5.0}                         │
+  # │             │   - {type: hold}                   # hold forever        │
+  # ├─────────────┼──────────────────────────────────────────────────────────┤
+  # │ raw_thrust  │ forces: [f0, f1, f2, f3, f4, f5, f6, f7]  (Newtons)    │
+  # │             │ duration  (seconds)                                      │
+  # │             │ Disable PID, inject per-thruster forces directly into    │
+  # │             │ /thruster_forces for 'duration' seconds, then re-enable. │
+  # │             │ Thruster order: [blh, flu, blu, flh, brh, fru, bru, frh]│
+  # │             │ Example:                                                 │
+  # │             │   - {type: raw_thrust, forces: [0,10,10,0,0,10,10,0],   │
+  # │             │       duration: 2.0}                                     │
+  # ├─────────────┼──────────────────────────────────────────────────────────┤
+  # │ set_pose    │ x, y, z, yaw  (all optional, default 0.0)               │
+  # │             │ Call /ekf_filter_node/set_pose to override the EKF      │
+  # │             │ estimated position. Fire-and-forget — advances at once. │
+  # │             │ Add a short pause after if the next pose waypoint needs │
+  # │             │ the new origin applied first.                           │
+  # │             │ Example:                                                 │
+  # │             │   - {type: set_pose}            # zero everything        │
+  # │             │   - {type: set_pose, z: -5.0}   # set depth only        │
+  # ├─────────────┼──────────────────────────────────────────────────────────┤
+  # │ loop        │ to: <index>                                              │
+  # │             │ count  (optional, omit or -1 = loop forever)            │
+  # │             │ Jump back to waypoint at index 'to'. Counts down        │
+  # │             │ 'count' passes through the loop entry, then falls       │
+  # │             │ through to the next waypoint.                           │
+  # │             │ Example:                                                 │
+  # │             │   - {type: loop, to: 0, count: 3}  # repeat 3 times     │
+  # │             │   - {type: loop, to: 0}             # loop forever       │
+  # └─────────────┴──────────────────────────────────────────────────────────┘
+
+  waypoints:
+  - {type: enable}
+  - {type: set_pose}  
+  - {type: raw_thrust, forces: [0, -20, -20, 0, 0, -20, -20, 0], duration: 1.0}
+  - {type: pause, duration: 1.0}
+  - {x: 1.0, y: 1.0, z: -1.0}   # start
+  - {type: hold, duration: 5.0}              # settle
+  - {type: loop, to: 4, count: 5}            # repeat 5 times

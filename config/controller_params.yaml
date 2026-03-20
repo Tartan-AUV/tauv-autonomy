@@ -1,0 +1,33 @@
+controller:
+  ros__parameters:
+    # PID gains per DOF: [x, y, z, roll, pitch, yaw]
+    # Body frame NED: x=forward, y=right, z=down
+    # Start conservative — tune empirically.
+    kp: [5.0, 5.0, 5.0, 0.0, 0.0, 0.0]
+    ki: [0.2, 0.2, 0.2, 0.0, 0.0, 0.0]
+    kd: [1.0, 1.0, 1.0, 0.0, 0.0, 0.0]
+
+    # Per-DOF output saturation [N or N·m]
+    max_wrench: [40.0, 40.0, 40.0, 20.0, 20.0, 20.0]
+
+    # Anti-windup: integrator clamped to this fraction of max_wrench
+    integrator_max_fraction: 0.4
+
+    # Rolling window for integrator [seconds] — only errors within this window contribute.
+    # Prevents old accumulated error from persisting after the vehicle has corrected.
+    integrator_window: 1.0
+
+    # Feedforward per DOF: [x, y, z, roll, pitch, yaw]
+    # ff_bias: constant force/torque added every tick (body NED frame).
+    #   Use ff_bias[2] to compensate gravity minus buoyancy on Z (positive = push down).
+    #   Tune first: drive with PID only, read the steady-state I term, move that value here.
+    ff_bias: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+    # kff: velocity feedforward gain.
+    #   Scales the derivative of the desired setpoint (body NED frame).
+    #   Gives an initial force push when the setpoint jumps to a new waypoint.
+    #   Start at 0, increase slowly until transient overshoot decreases.
+    kff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+    # Controller output rate [Hz]
+    rate: 50.0
