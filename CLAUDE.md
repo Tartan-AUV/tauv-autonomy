@@ -49,10 +49,10 @@ The URDF defines the physical robot model with correct sensor positions. Root li
 
 **Sensor frame offsets from `os/base_link`:**
 - `imu_xsens_link`: xyz = (-0.017, -0.111, +0.047) m
-- `dvl_link`:       xyz = (0, -0.141, +0.010) m
+- `dvl_link`:       xyz = (0, -0.141, +0.010) m, rpy = (0, π, 0) — 180° around Y for real hardware mounting
 - `depth_link`:     xyz = (+0.064, -0.200, +0.080) m
 
-**Important:** Sensor joint rotations are zeroed in the URDF. The sim bridges already convert FRD→FLU in C++. Keeping the original CAD joint rotations would double-rotate EKF inputs via TF. If you update the URDF, keep sensor joint rpy="0 0 0".
+**Important:** Sensor joint rotations are zeroed in the URDF except where real hardware mounting requires a correction. The sim bridges already convert FRD→FLU in C++. Only add URDF rotations that reflect a physical mounting difference not already handled by the bridge.
 
 ## Launch Files
 
@@ -64,10 +64,12 @@ Starts `robot_state_publisher`, `controller`, `thruster_allocator`, and `force_t
 # Terminal 1: hardware drivers
 ros2 launch tauv_launch sensors.launch.py
 
-# Terminal 2: autonomy
-ros2 launch tauv_autonomy Osprey/launch/osprey.launch.py
-# + EKF node separately (see tauv_core/config/ekfFUNNY.yaml)
+# Terminal 2: autonomy + EKF + converters + waypoint runner
+ros2 launch tauv_autonomy Osprey/launch/pid_tuning_real.launch.py [record:=true]
 ```
+
+### `Osprey/launch/pid_tuning_real.launch.py`
+Real-robot equivalent of `tauv_sim/pid_tuning.launch.py`. Starts tauv_core sensor converters (imu_converter, depth_converter, dvl_converter), EKF, osprey.launch.py (sim:=false), waypoint_runner, Foxglove bridge, and optional bag recording. Assumes `tauv_launch sensors.launch.py` is already running in a separate terminal.
 
 **Sim usage:**
 ```bash

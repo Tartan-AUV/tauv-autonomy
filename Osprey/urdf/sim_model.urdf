@@ -74,7 +74,8 @@
     <joint name="dvl_joint" type="fixed">
         <!-- Original CAD xyz (near-zero x cleaned up): 0 -0.140832 0.0100375 -->
         <!-- Original CAD rpy was "-pi 0 -pi" — zeroed, bridge handles FRD→FLU -->
-        <origin xyz="0 -0.140832 0.0100375" rpy="0 0 0" />
+        <!-- 180° around Y added to correct real-hardware mounting orientation -->
+        <origin xyz="0 -0.140832 0.0100375" rpy="0 3.14159265 0" />
         <parent link="os/base_link" />
         <child link="dvl_link" />
     </joint>
