@@ -8,6 +8,7 @@ import rclpy
 from rclpy.node import Node
 from nav_msgs.msg import Odometry
 from geometry_msgs.msg import Wrench
+from tauv_msgs.msg import PID
 import numpy as np
 
 class Controller(Node):
@@ -18,6 +19,7 @@ class Controller(Node):
         # Subscriptions
         self.create_subscription(Odometry, '/odometry/filtered', self.odom_callback, 10)
         self.create_subscription(Odometry, '/desired_state', self.desired_state_callback, 10)
+        self.create_subscription(PID, '/pid_depth', self.pid_callback, 10)
         
         # Publisher
         self.wrench_pub = self.create_publisher(Wrench, '/cmd_wrench', 10)
@@ -27,9 +29,10 @@ class Controller(Node):
         self.desired_state = None
         
         # PID Parameters for Depth (World Z-axis)
-        self.kp_z = 10.0  # Proportional gain
-        self.ki_z = 1.0   # Integral gain
-        self.kd_z = 5.0   # Derivative gain
+        self.kp_z = 10    # Proportional gain
+        self.ki_z = 0.0   # Integral gain
+        self.kd_z = 0.5   # Derivative gain
+        self.ff_z = 28    # Feedforward term to counteract buoyancy (adjust based on testing)
         
         # PID State tracking
         self.integral_z_world = 0.0
@@ -45,6 +48,13 @@ class Controller(Node):
     def desired_state_callback(self, msg):
         """Update the desired target state"""
         self.desired_state = msg
+
+    def pid_callback(self, msg):
+        """Update PID parameters from the /pid_depth topic"""
+        self.kp_z = msg.p
+        self.ki_z = msg.i
+        self.kd_z = msg.d
+        self.ff_z = msg.ff
 
     def control_loop(self):
         """Main control loop triggered by the timer"""
@@ -88,7 +98,7 @@ class Controller(Node):
         d_term = self.kd_z * (-vz_world) 
         
         # Compute total command force required in the WORLD Z-axis
-        force_z_world = p_term + i_term + d_term
+        force_z_world = p_term + i_term + d_term - self.ff_z
 
         # --- 4. MAP FORCES TO BODY FRAME ---
         
