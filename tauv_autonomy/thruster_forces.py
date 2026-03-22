@@ -1,14 +1,14 @@
 from tauv_msgs.msg import ThrusterSetpoint
-from tauv_temp.forceOptimizer import solve_thrusts, config
+from tauv_autonomy.force_optimizer_2 import solve_thrusts, config
 import numpy as np
 import rclpy
 from rclpy.node import Node
 from geometry_msgs.msg import Wrench
 
-class wrench(Node):
+class thruster_forces(Node):
     def __init__(self):
-        super().__init__('wrench')
-        self.get_logger().info('Wrench node initialized')
+        super().__init__('thruster_forces')
+        self.get_logger().info('Thruster forces node initialized')
         self.create_subscription(Wrench, 'cmd_wrench', self.wrench_callback, 10)
         self.thruster_pub = self.create_publisher(ThrusterSetpoint, 'thruster_forces', 10)
 
@@ -25,7 +25,7 @@ class wrench(Node):
 
 def main(args=None):
     rclpy.init(args=args)
-    node = wrench()
+    node = thruster_forces()
     
     try:
         rclpy.spin(node)

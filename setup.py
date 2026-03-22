@@ -24,7 +24,7 @@ setup(
     },
     entry_points={
         'console_scripts': [
-            'wrench = tauv_autonomy.wrench:main', 
+            'wrench = tauv_autonomy.thruster_forces:main', 
             'force_to_gain = tauv_autonomy.force_to_gain:main',
             'controller = tauv_autonomy.controller:main',
         ],
