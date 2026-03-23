@@ -1,5 +1,5 @@
 from tauv_msgs.msg import ThrusterSetpoint
-from tauv_autonomy.force_optimizer_3 import solve_thrusts
+from tauv_autonomy.force_optimizer import solve_thrusts
 import numpy as np
 import rclpy
 from rclpy.node import Node
@@ -14,7 +14,7 @@ class thruster_forces(Node):
 
     def wrench_callback(self, msg):
         self.get_logger().info(f'Received wrench command: {msg}')
-        wrench = np.array([msg.force.x, -1*msg.force.y, msg.force.z, msg.torque.x, msg.torque.y, msg.torque.z])
+        wrench = np.array([msg.force.x, msg.force.y, msg.force.z, msg.torque.x, msg.torque.y, msg.torque.z])
         motor_commands = solve_thrusts(wrench)
         self.get_logger().info(f'Calculated motor commands: {motor_commands}')
         thruster_msg = ThrusterSetpoint()
