@@ -10,6 +10,7 @@ setup(
         ('share/ament_index/resource_index/packages',
             ['resource/' + package_name]),
         ('share/' + package_name, ['package.xml']),
+        ('share/' + package_name + '/config', ['config/motor_equations.yaml']),
     ],
     install_requires=['setuptools'],
     zip_safe=True,
@@ -26,6 +27,9 @@ setup(
         'console_scripts': [
             'thruster_forces = tauv_autonomy.thruster_forces:main', 
             'controller = tauv_autonomy.controller:main',
+            'oscillating = tauv_autonomy.oscintillating:main',
+            'thruster_rpms = tauv_autonomy.thruster_rpms:main',
+
         ],
     },
 )

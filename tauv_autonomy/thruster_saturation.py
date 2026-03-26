@@ -1,9 +1,10 @@
 from tauv_msgs.msg import ThrusterSetpoint
 from tauv_autonomy.force_optimizer import solve_thrusts
+from geometry_msgs.msg import Wrench
 import numpy as np
 
 
-MAXFORCE = 37.0 
+MAXFORCE = 37.0
 
 def resolve_wrenches(wrenches_dict):
     """
@@ -38,4 +39,13 @@ def resolve_wrenches(wrenches_dict):
 
     thruster_msg = ThrusterSetpoint()
     thruster_msg.thrust = cum_force.tolist()
-    return thruster_msg
+
+    wrench_msg = Wrench()
+    wrench_msg.force.x = cum_wrench[0]
+    wrench_msg.force.y = cum_wrench[1]
+    wrench_msg.force.z = cum_wrench[2]
+    wrench_msg.torque.x = cum_wrench[3]
+    wrench_msg.torque.y = cum_wrench[4]
+    wrench_msg.torque.z = cum_wrench[5]
+
+    return thruster_msg, wrench_msg

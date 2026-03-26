@@ -8,6 +8,7 @@ import rclpy
 from rclpy.node import Node
 from nav_msgs.msg import Odometry
 from tauv_msgs.msg import ThrusterSetpoint
+from geometry_msgs.msg import Wrench, Quaternion
 from tauv_msgs.msg import PID
 import numpy as np
 from tauv_autonomy.pid import PIDController
@@ -27,6 +28,7 @@ class Controller(Node):
         
         # Publisher
         self.thruster_pub = self.create_publisher(ThrusterSetpoint, 'thruster_forces', 10)
+        self.wrench_pub = self.create_publisher(Wrench, '/cmd_wrench', 10)
         
         # State variables
         self.current_state = None
@@ -35,19 +37,19 @@ class Controller(Node):
         self.pid_pos = {
             'x':     PIDController(kp=1.0),
             'y':     PIDController(kp=1.0),
-            'z':     PIDController(kp=2.0),
-            'roll':  PIDController(kp=1.5),
-            'pitch': PIDController(kp=1.5),
-            'yaw':   PIDController(kp=2.0)
+            'z':     PIDController(kp=1.0),
+            'roll':  PIDController(kp=1.0),
+            'pitch': PIDController(kp=1.0),
+            'yaw':   PIDController(kp=1.0)
         }
 
         self.pid_vel = {
-            'x':     PIDController(kp=10.0, kd=2.0),
-            'y':     PIDController(kp=10.0, kd=2.0),
-            'z':     PIDController(kp=20.0, kd=3.0, ff=-28.0),
-            'roll':  PIDController(kp=5.0,  kd=1.0),
-            'pitch': PIDController(kp=5.0,  kd=1.0),
-            'yaw':   PIDController(kp=5.0,  kd=1.0)
+            'x':     PIDController(kp=1.0),
+            'y':     PIDController(kp=1.0),
+            'z':     PIDController(kp=1.0),
+            'roll':  PIDController(kp=-9.0, kd=-2.0),
+            'pitch': PIDController(kp=-9.0, kd=-2.0),
+            'yaw':   PIDController(kp=9.0, kd=2.0)
         }
         
         # Control loop timer
@@ -84,11 +86,11 @@ class Controller(Node):
         cur_orient_world = self.current_state.pose.pose.orientation
         des_orient_world = self.desired_state.pose.pose.orientation
 
+        w_d, x_d, y_d, z_d = des_orient_world.w, des_orient_world.x, des_orient_world.y, des_orient_world.z
+        w_c, x_c, y_c, z_c = cur_orient_world.w, cur_orient_world.x, cur_orient_world.y, cur_orient_world.z
+
         R_body_to_world = quat_to_rot_matrix(cur_orient_world)
         R_world_to_body = R_body_to_world.T
-
-        cur_roll_world, cur_pitch_world, cur_yaw_world = quat_to_euler(cur_orient_world)
-        des_roll_world, des_pitch_world, des_yaw_world = quat_to_euler(des_orient_world)
         
         # --- 2. VELOCITY DATA IN WORLD FRAME ---
         cur_lin_vel_body = np.array([
@@ -106,13 +108,37 @@ class Controller(Node):
         cur_ang_vel_world = R_body_to_world @ cur_ang_vel_body
 
         # --- 3. CALCULATE ERRORS ---
+        
+        # Positional error (World Frame)
         err_x_world = des_pos_world.x - cur_pos_world.x
         err_y_world = des_pos_world.y - cur_pos_world.y
         err_z_world = des_pos_world.z - cur_pos_world.z
         
-        err_roll_world  = wrap_angle(des_roll_world  - cur_roll_world)
-        err_pitch_world = wrap_angle(des_pitch_world - cur_pitch_world)
-        err_yaw_world   = wrap_angle(des_yaw_world   - cur_yaw_world)
+        # Quaternion multiplication math (q_des * conjugate(q_cur))
+        # Note: The conjugate of q_cur is found by negating its x, y, and z components
+        err_w = w_d * w_c + x_d * x_c + y_d * y_c + z_d * z_c
+        err_x = x_d * w_c - w_d * x_c - y_d * z_c + z_d * y_c
+        err_y = y_d * w_c + x_d * z_c - w_d * y_c - z_d * x_c
+        err_z = z_d * w_c - x_d * y_c + y_d * x_c - w_d * z_c
+        
+        # Normalize the error quaternion to prevent floating point drift
+        norm = np.sqrt(err_w**2 + err_x**2 + err_y**2 + err_z**2)
+        
+        # Create a temporary quaternion object to pass into existing quat_to_euler function
+        err_quat = Quaternion()
+        err_quat.w = err_w / norm
+        err_quat.x = err_x / norm
+        err_quat.y = err_y / norm
+        err_quat.z = err_z / norm
+        err_roll_world, err_pitch_world, err_yaw_world = quat_to_euler(err_quat)
+
+        # --- 3A. DEBUGGING ---
+        err_x_world = 0
+        err_y_world = 0
+        err_z_world = 0
+        # err_roll_world = 0
+        # err_pitch_world = 0
+        # err_yaw_world = 0
 
         # --- 4. OUTER LOOP: POSITION -> VELOCITY ---
         max_lin = 10
@@ -151,9 +177,10 @@ class Controller(Node):
             t_body = R_world_to_body @ t_world
             wrenches[axis] = np.concatenate((f_body, t_body))
             
-        thruster_forces = resolve_wrenches(wrenches)
+        thruster_forces, wrench = resolve_wrenches(wrenches)
         thruster_forces.armed = True
         self.thruster_pub.publish(thruster_forces)
+        self.wrench_pub.publish(wrench)
 
     
 def main(args=None):
