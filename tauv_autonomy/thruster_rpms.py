@@ -1,5 +1,5 @@
 """
-Will take cmd_wrench in and ouptut thruster_forces
+Will take thruster_forces in and ouptut thruster_rpm
 """
 
 
@@ -10,27 +10,29 @@ import rclpy
 from rclpy.node import Node
 from geometry_msgs.msg import Wrench
 
-class thruster_forces(Node):
+from tauv_autonomy.force_to_gain import force_to_rpm
+class thruster_rpms(Node):
     def __init__(self):
-        super().__init__('thruster_forces')
+        super().__init__('thruster_rpms')
         self.get_logger().info('Thruster forces node initialized')
-        self.create_subscription(Wrench, 'cmd_wrench', self.wrench_callback, 10)
-        self.thruster_pub = self.create_publisher(ThrusterSetpoint, 'thruster_forces', 10)
+        self.create_subscription(ThrusterSetpoint, 'thruster_forces', self.forces_callback, 10)
+        self.thruster_pub = self.create_publisher(ThrusterSetpoint, 'thruster_rpms', 10)
 
-    def wrench_callback(self, msg):
-        self.get_logger().info(f'Received wrench command: {msg}')
-        wrench = np.array([msg.force.x, msg.force.y, msg.force.z, msg.torque.x, msg.torque.y, msg.torque.z])
-        motor_commands = solve_thrusts(wrench)
+    def forces_callback(self, msg):
+        self.get_logger().info(f'Received forces command: {msg}')
+        thruster_forces = np.array(msg.thrust)
+    
+        motor_commands = np.array([force_to_rpm(f) for f in thruster_forces])
         self.get_logger().info(f'Calculated motor commands: {motor_commands}')
         thruster_msg = ThrusterSetpoint()
         thruster_msg.thrust = motor_commands.tolist()
-        thruster_msg.armed = True  # Set to True to enable thrusters; set to False for testing without arming
+        thruster_msg.armed = False  # Set to True to enable thrusters; set to False for testing without arming
         self.thruster_pub.publish(thruster_msg)
 
 
 def main(args=None):
     rclpy.init(args=args)
-    node = thruster_forces()
+    node = thruster_rpms()
     
     try:
         rclpy.spin(node)

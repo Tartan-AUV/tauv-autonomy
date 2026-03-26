@@ -1,0 +1,43 @@
+# Motor equations relating Force, RPM, Gain, and Voltage.
+#
+# Force from RPM (quadratic):
+#   F = a*RPM^2 + b*RPM + c
+#
+# RPM from Gain and Voltage (cubic polynomial):
+#   RPM = c0 + c_g*g + c_v*v + c_g2*g^2 + c_gv*g*v + c_v2*v^2
+#         + c_g2v*g^2*v + c_gv2*g*v^2 + c_v3*v^3
+
+force_from_rpm:
+  positive:
+    a:  4.557e-07
+    b: -1.402e-04
+    c:  6.364e-02
+  negative:
+    a: -3.849e-07
+    b: -1.938e-04
+    c: -1.015e-01
+
+rpm_from_gain_voltage:
+  positive:
+    c0:    -1415.3219
+    c_g:       0.243691
+    c_v:       0.780504
+    c_g2:      0.000030
+    c_gv:      0.023399
+    c_v2:     12.906228
+    c_g2v:    -0.000004
+    c_gv2:     0.000359
+    c_v3:     -0.468978
+  negative:
+    c0:      523.9110
+    c_g:      -0.384959
+    c_v:      -0.297113
+    c_g2:     -0.000009
+    c_gv:     -0.007116
+    c_v2:     -4.904108
+    c_g2v:     0.000003
+    c_gv2:    -0.000783
+    c_v3:      0.179616
+
+# Misc parameters
+force_deadband: 0.775   # Forces with abs value below this clip to gain=0
