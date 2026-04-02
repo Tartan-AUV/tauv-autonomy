@@ -15,7 +15,7 @@ import yaml
 from ament_index_python.packages import get_package_share_directory
 
 
-def _load_equations(package_name: str = "tauv_dronecan",
+def _load_equations(package_name: str = "tauv_autonomy",
                     filename: str = "motor_equations.yaml") -> dict:
     """Load motor equation coefficients from the installed YAML file."""
     share_dir = get_package_share_directory(package_name)
@@ -41,7 +41,7 @@ def force_to_rpm(force: float) -> float:
     elif (force < -40):
         force = -40
 
-    
+
     force = force / 9.81 # from N to kgf
     coefs = FORCE_FROM_RPM_POS if force >= 0 else FORCE_FROM_RPM_NEG
     a, b, c = coefs["a"], coefs["b"], coefs["c"]
@@ -58,7 +58,7 @@ def force_to_rpm(force: float) -> float:
         return float(np.max(real_roots))
     else:
         return float(np.min(real_roots))
-  
+
 
 # ── quick demo ──────────────────────────────────────────────────────────────
 if __name__ == "__main__":

@@ -20,20 +20,21 @@ class Controller(Node):
     def __init__(self):
         super().__init__('controller')
         self.get_logger().info('Controller node initialized')
-        
+
         # Subscriptions
         self.create_subscription(Odometry, '/odometry/filtered', self.odom_callback, 10)
         self.create_subscription(Odometry, '/desired_state', self.desired_state_callback, 10)
-        self.create_subscription(PID, '/pid_depth', self.pid_callback, 10)
-        
+        self.create_subscription(PID, '/pid', self.pid_callback, 10)
+
         # Publisher
         self.thruster_pub = self.create_publisher(ThrusterSetpoint, 'thruster_forces', 10)
         self.wrench_pub = self.create_publisher(Wrench, '/cmd_wrench', 10)
-        
+        self.pid_gains_pub = self.create_publisher(PID, '/pid', 10)
+
         # State variables
         self.current_state = None
         self.desired_state = None
-        
+
         self.pid_pos = {
             'x':     PIDController(kp=1.0),
             'y':     PIDController(kp=1.0),
@@ -44,14 +45,16 @@ class Controller(Node):
         }
 
         self.pid_vel = {
-            'x':     PIDController(kp=1.0),
-            'y':     PIDController(kp=1.0),
-            'z':     PIDController(kp=1.0),
-            'roll':  PIDController(kp=-9.0, kd=-2.0),
-            'pitch': PIDController(kp=-9.0, kd=-2.0),
-            'yaw':   PIDController(kp=9.0, kd=2.0)
+            'x':     PIDController(kp=9.0, ki=0.1),
+            'y':     PIDController(kp=9.0, ki=0.1),
+            'z':     PIDController(kp=15.0, ki=0.1, kd=3.0, ff=-28),
+            'roll':  PIDController(kp=9.0, ki=0.1, kd=2.0),
+            'pitch': PIDController(kp=25.0, ki=0.1, kd=2.0),
+            'yaw':   PIDController(kp=9.0, ki=0.1, kd=2.0)
         }
-        
+
+        self.publish_current_pid_gains()
+
         # Control loop timer
         self.timer_period = 0.1  # 10Hz
         self.timer = self.create_timer(self.timer_period, self.control_loop)
@@ -64,13 +67,75 @@ class Controller(Node):
         """Update the desired target state"""
         self.desired_state = msg
 
+    def publish_current_pid_gains(self):
+        msg = PID()
+        print("Something is happening blah blah blah")
+
+        # Helper to extract [kp, ki, kd, ff], defaulting to 0.0 if an attribute doesn't exist
+        def get_pidf_array(pidcontroller):
+            return [
+                float(getattr(pidcontroller, 'kp', 0.0)),
+                float(getattr(pidcontroller, 'ki', 0.0)),
+                float(getattr(pidcontroller, 'kd', 0.0)),
+                float(getattr(pidcontroller, 'ff', 0.0))
+            ]
+
+        # Populate Position PIDF values
+        msg.pidf_x_pos = get_pidf_array(self.pid_pos['x'])
+        msg.pidf_y_pos = get_pidf_array(self.pid_pos['y'])
+        msg.pidf_z_pos = get_pidf_array(self.pid_pos['z'])
+        msg.pidf_roll_pos = get_pidf_array(self.pid_pos['roll'])
+        msg.pidf_pitch_pos = get_pidf_array(self.pid_pos['pitch'])
+        msg.pidf_yaw_pos = get_pidf_array(self.pid_pos['yaw'])
+
+        # Populate Velocity PIDF values
+        msg.pidf_x_vel = get_pidf_array(self.pid_vel['x'])
+        msg.pidf_y_vel = get_pidf_array(self.pid_vel['y'])
+        msg.pidf_z_vel = get_pidf_array(self.pid_vel['z'])
+        msg.pidf_roll_vel = get_pidf_array(self.pid_vel['roll'])
+        msg.pidf_pitch_vel = get_pidf_array(self.pid_vel['pitch'])
+        msg.pidf_yaw_vel = get_pidf_array(self.pid_vel['yaw'])
+
+        # Publish the message
+        self.pid_gains_pub.publish(msg)
+
     def pid_callback(self, msg):
-        """Update PID parameters from the /pid_depth topic"""
-        # self.kp_z = msg.p
-        # self.ki_z = msg.i
-        # self.kd_z = msg.d
-        # self.ff_z = msg.ff
-        pass
+        """
+        Callback to dynamically update PID gains from an external publisher.
+        Expects msg arrays to be formatted as [kp, ki, kd, ff].
+        """
+        # Helper function to safely unpack the array and update the controller
+        def update_controller_gains(controller, gain_array):
+            # Ensure the array has the expected 4 elements before updating
+            if len(gain_array) >= 4:
+                controller.kp = float(gain_array[0])
+                controller.ki = float(gain_array[1])
+                controller.kd = float(gain_array[2])
+                controller.ff = float(gain_array[3])
+            else:
+                self.get_logger().warn("Received malformed PID array. Expected 4 elements.")
+
+        try:
+            # --- Update Position PIDs ---
+            update_controller_gains(self.pid_pos['x'], msg.pidf_x_pos)
+            update_controller_gains(self.pid_pos['y'], msg.pidf_y_pos)
+            update_controller_gains(self.pid_pos['z'], msg.pidf_z_pos)
+            update_controller_gains(self.pid_pos['roll'], msg.pidf_roll_pos)
+            update_controller_gains(self.pid_pos['pitch'], msg.pidf_pitch_pos)
+            update_controller_gains(self.pid_pos['yaw'], msg.pidf_yaw_pos)
+
+            # --- Update Velocity PIDs ---
+            update_controller_gains(self.pid_vel['x'], msg.pidf_x_vel)
+            update_controller_gains(self.pid_vel['y'], msg.pidf_y_vel)
+            update_controller_gains(self.pid_vel['z'], msg.pidf_z_vel)
+            update_controller_gains(self.pid_vel['roll'], msg.pidf_roll_vel)
+            update_controller_gains(self.pid_vel['pitch'], msg.pidf_pitch_vel)
+            update_controller_gains(self.pid_vel['yaw'], msg.pidf_yaw_vel)
+
+            self.get_logger().info("Successfully updated PID gains from external message.")
+
+        except Exception as e:
+            self.get_logger().error(f"Failed to update PID gains: {e}")
 
     def control_loop(self):
         """Main control loop triggered by the timer"""
@@ -82,7 +147,7 @@ class Controller(Node):
         # --- 1. POSE DATA IN WORLD FRAME ---
         cur_pos_world = self.current_state.pose.pose.position
         des_pos_world = self.desired_state.pose.pose.position
-        
+
         cur_orient_world = self.current_state.pose.pose.orientation
         des_orient_world = self.desired_state.pose.pose.orientation
 
@@ -91,7 +156,7 @@ class Controller(Node):
 
         R_body_to_world = quat_to_rot_matrix(cur_orient_world)
         R_world_to_body = R_body_to_world.T
-        
+
         # --- 2. VELOCITY DATA IN WORLD FRAME ---
         cur_lin_vel_body = np.array([
             self.current_state.twist.twist.linear.x,
@@ -108,22 +173,22 @@ class Controller(Node):
         cur_ang_vel_world = R_body_to_world @ cur_ang_vel_body
 
         # --- 3. CALCULATE ERRORS ---
-        
+
         # Positional error (World Frame)
         err_x_world = des_pos_world.x - cur_pos_world.x
         err_y_world = des_pos_world.y - cur_pos_world.y
         err_z_world = des_pos_world.z - cur_pos_world.z
-        
+
         # Quaternion multiplication math (q_des * conjugate(q_cur))
         # Note: The conjugate of q_cur is found by negating its x, y, and z components
         err_w = w_d * w_c + x_d * x_c + y_d * y_c + z_d * z_c
         err_x = x_d * w_c - w_d * x_c - y_d * z_c + z_d * y_c
         err_y = y_d * w_c + x_d * z_c - w_d * y_c - z_d * x_c
         err_z = z_d * w_c - x_d * y_c + y_d * x_c - w_d * z_c
-        
+
         # Normalize the error quaternion to prevent floating point drift
         norm = np.sqrt(err_w**2 + err_x**2 + err_y**2 + err_z**2)
-        
+
         # Create a temporary quaternion object to pass into existing quat_to_euler function
         err_quat = Quaternion()
         err_quat.w = err_w / norm
@@ -133,9 +198,9 @@ class Controller(Node):
         err_roll_world, err_pitch_world, err_yaw_world = quat_to_euler(err_quat)
 
         # --- 3A. DEBUGGING ---
-        err_x_world = 0
-        err_y_world = 0
-        err_z_world = 0
+        # err_x_world = 0
+        # err_y_world = 0
+        # err_z_world = 0
         # err_roll_world = 0
         # err_pitch_world = 0
         # err_yaw_world = 0
@@ -143,11 +208,11 @@ class Controller(Node):
         # --- 4. OUTER LOOP: POSITION -> VELOCITY ---
         max_lin = 10
         max_ang = 5
-        
+
         cmd_lin_vel_x_world = np.clip(self.pid_pos['x'].compute(err_x_world, 0.0, dt, cur_lin_vel_world[0]), -max_lin, max_lin)
         cmd_lin_vel_y_world = np.clip(self.pid_pos['y'].compute(err_y_world, 0.0, dt, cur_lin_vel_world[1]), -max_lin, max_lin)
         cmd_lin_vel_z_world = np.clip(self.pid_pos['z'].compute(err_z_world, 0.0, dt, cur_lin_vel_world[2]), -max_lin, max_lin)
-        
+
         cmd_ang_vel_roll_world  = np.clip(self.pid_pos['roll'].compute( err_roll_world,  0.0, dt, cur_ang_vel_world[0]), -max_ang, max_ang)
         cmd_ang_vel_pitch_world = np.clip(self.pid_pos['pitch'].compute(err_pitch_world, 0.0, dt, cur_ang_vel_world[1]), -max_ang, max_ang)
         cmd_ang_vel_yaw_world   = np.clip(self.pid_pos['yaw'].compute(  err_yaw_world,   0.0, dt, cur_ang_vel_world[2]), -max_ang, max_ang)
@@ -156,7 +221,7 @@ class Controller(Node):
         force_x_world = self.pid_vel['x'].compute(cmd_lin_vel_x_world, cur_lin_vel_world[0], dt)
         force_y_world = self.pid_vel['y'].compute(cmd_lin_vel_y_world, cur_lin_vel_world[1], dt)
         force_z_world = self.pid_vel['z'].compute(cmd_lin_vel_z_world, cur_lin_vel_world[2], dt)
-        
+
         torque_roll_world  = self.pid_vel['roll'].compute( cmd_ang_vel_roll_world,  cur_ang_vel_world[0], dt)
         torque_pitch_world = self.pid_vel['pitch'].compute(cmd_ang_vel_pitch_world, cur_ang_vel_world[1], dt)
         torque_yaw_world   = self.pid_vel['yaw'].compute(  cmd_ang_vel_yaw_world,   cur_ang_vel_world[2], dt)
@@ -176,13 +241,13 @@ class Controller(Node):
             f_body = R_world_to_body @ f_world
             t_body = R_world_to_body @ t_world
             wrenches[axis] = np.concatenate((f_body, t_body))
-            
+
         thruster_forces, wrench = resolve_wrenches(wrenches)
         thruster_forces.armed = True
         self.thruster_pub.publish(thruster_forces)
         self.wrench_pub.publish(wrench)
 
-    
+
 def main(args=None):
     rclpy.init(args=args)
     node = Controller()
