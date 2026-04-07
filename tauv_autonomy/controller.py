@@ -25,13 +25,13 @@ class Controller(Node):
         super().__init__('controller')
         self.get_logger().info('Controller node initialized')
 
-        self.declare_parameter('tune', False)
+        self.declare_parameter('tune', True)
         self.tune = self.get_parameter('tune').get_parameter_value().bool_value
         if self.tune:
             self.get_logger().info('Tuning is ENABLED.')
         else:
             self.get_logger().info('Tuning is DISABLED.')
-        self.pid_file_path = os.path.expanduser('~/tauv-mono/ros_ws/src/tauv_autonomy/config/auv_pid_history.csv')
+        self.pid_file_path = os.path.expanduser('~/tauv-mono/ros_ws/src/tauv_autonomy/config/pid_history.csv')
         self.last_csv_row = {}
 
         # Subscriptions
@@ -58,12 +58,12 @@ class Controller(Node):
         }
 
         self.pid_vel = {
-            'x':     PIDController(kp=9.0),
-            'y':     PIDController(kp=9.0),
-            'z':     PIDController(ff=-28),
-            'roll':  PIDController(),
-            'pitch': PIDController(),
-            'yaw':   PIDController(kp=9.0, kd=2.0)
+            'x':     PIDController(kp=9.0, ki=0.1),
+            'y':     PIDController(kp=9.0, ki=0.1),
+            'z':     PIDController(kp=15.0, ki=0.1, kd=3.0, ff=-28),
+            'roll':  PIDController(kp=9.0, ki=0.1, kd=2.0),
+            'pitch': PIDController(kp=25.0, ki=0.1, kd=2.0),
+            'yaw':   PIDController(kp=9.0, ki=0.1, kd=2.0)
         }
 
         self.load_pid_data()
@@ -244,7 +244,7 @@ class Controller(Node):
 
         # --- 3.75. AUTO-TUNE FEEDFORWARD ---
         if self.tune:
-            alpha = 0.5  # Velocity multiplier
+            alpha = -0.5  # Velocity multiplier
             beta = 2.0   # Position error multiplier
 
             self.pid_vel['z'].ff += (beta * err_z_world) - (alpha * cur_lin_vel_world[2])
