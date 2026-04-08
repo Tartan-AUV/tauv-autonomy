@@ -15,7 +15,7 @@ from tauv_autonomy.pid import PIDController
 from tauv_autonomy.utils import *
 from tauv_autonomy.thruster_saturation import resolve_wrenches
 import csv
-import os
+from pathlib import Path
 from datetime import datetime
 from ament_index_python.packages import get_package_share_directory
 
@@ -25,13 +25,13 @@ class Controller(Node):
         super().__init__('controller')
         self.get_logger().info('Controller node initialized')
 
-        self.declare_parameter('tune', True)
+        self.declare_parameter('tune', False)
         self.tune = self.get_parameter('tune').get_parameter_value().bool_value
         if self.tune:
             self.get_logger().info('Tuning is ENABLED.')
         else:
             self.get_logger().info('Tuning is DISABLED.')
-        self.pid_file_path = os.path.expanduser('~/tauv-mono/ros_ws/src/tauv_autonomy/config/pid_history.csv')
+        self.pid_file_path = Path("/tauv-mono/ros_ws/src/tauv_autonomy/config/pid_history.csv")
         self.last_csv_row = {}
 
         # Subscriptions
@@ -298,7 +298,7 @@ class Controller(Node):
 
     def load_pid_data(self):
         """Reads the CSV and applies the very last row to the controllers."""
-        if not os.path.exists(self.pid_file_path):
+        if not self.pid_file_path.exists():
             self.get_logger().info('No CSV history found. Using hardcoded defaults.')
             return
 
@@ -307,6 +307,7 @@ class Controller(Node):
                 reader = csv.DictReader(f)
                 rows = list(reader)
                 if not rows:
+                    self.get_logger().info('CSV file is empty. Using hardcoded defaults.')
                     return
                 
                 # Grab the most recent entry
@@ -354,15 +355,14 @@ class Controller(Node):
                         row[col_name] = self.last_csv_row[col_name]
 
         # Append to the file
-        file_exists = os.path.isfile(self.pid_file_path)
         headers = list(row.keys())
-
         try:
             with open(self.pid_file_path, mode='a', newline='') as f:
                 writer = csv.DictWriter(f, fieldnames=headers)
                 
                 # Write the header row only if this is a brand new file
-                if not file_exists:
+                if not self.pid_file_path.exists():
+                    self.get_logger().info('Creating new CSV file and writing header.')
                     writer.writeheader()
                     
                 writer.writerow(row)
