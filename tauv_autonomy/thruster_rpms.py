@@ -26,7 +26,7 @@ class thruster_rpms(Node):
         # self.get_logger().info(f'Calculated motor commands: {motor_commands}')
         thruster_msg = ThrusterSetpoint()
         thruster_msg.thrust = motor_commands.tolist()
-        thruster_msg.armed = False  # Set to True to enable thrusters; set to False for testing without arming
+        thruster_msg.armed = True  # Set to True to enable thrusters; set to False for testing without arming
         self.thruster_pub.publish(thruster_msg)
 
 
