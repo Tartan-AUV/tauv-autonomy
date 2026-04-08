@@ -53,14 +53,14 @@ class Controller(Node):
             'y':     PIDController(kp=1.0),
             'z':     PIDController(kp=1.0),
             'roll':  PIDController(kp=1.0),
-            'pitch': PIDController(kp=1.0),
+            'pitch': PIDController(kp=0.2, kd=0.2),
             'yaw':   PIDController(kp=1.0)
         }
 
         self.pid_vel = {
             'x':     PIDController(kp=9.0, ki=0.1),
             'y':     PIDController(kp=9.0, ki=0.1),
-            'z':     PIDController(kp=15.0, ki=0.1, kd=3.0, ff=-28),
+            'z':     PIDController(kp=15.0, ki=0.1, kd=3.0, ff=-26),
             'roll':  PIDController(kp=9.0, ki=0.1, kd=2.0),
             'pitch': PIDController(kp=25.0, ki=0.1, kd=2.0),
             'yaw':   PIDController(kp=9.0, ki=0.1, kd=2.0)
