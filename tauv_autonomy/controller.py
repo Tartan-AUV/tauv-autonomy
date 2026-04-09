@@ -49,24 +49,24 @@ class Controller(Node):
         self.desired_state = None
 
         self.pid_pos = {
-            'x':     PIDController(kp=1.0),
-            'y':     PIDController(kp=1.0),
-            'z':     PIDController(kp=1.0),
-            'roll':  PIDController(kp=1.0),
+            'x':     PIDController(kp=1.1, kd=0.1),
+            'y':     PIDController(kp=10, ki=1, kd=0.3),
+            'z':     PIDController(kp=10, kd=0.6),
+            'roll':  PIDController(kp=1.1, kd=0.1),
             'pitch': PIDController(kp=0.2, kd=0.2),
-            'yaw':   PIDController(kp=1.0)
+            'yaw':   PIDController(kp=1.1, kd=0.1)
         }
 
         self.pid_vel = {
             'x':     PIDController(kp=9.0, ki=0.1),
             'y':     PIDController(kp=9.0, ki=0.1),
-            'z':     PIDController(kp=15.0, ki=0.1, kd=3.0, ff=-26),
+            'z':     PIDController(kp=10.0, ki=0.1, kd=3.0, ff=-26),
             'roll':  PIDController(kp=9.0, ki=0.1, kd=2.0),
             'pitch': PIDController(kp=25.0, ki=0.1, kd=2.0),
             'yaw':   PIDController(kp=9.0, ki=0.1, kd=2.0)
         }
 
-        self.load_pid_data()
+        # self.load_pid_data()
         if self.tune:
             for axis in ['z', 'roll', 'pitch']:
                 self.pid_vel[axis].kp = 0.0
@@ -117,6 +117,7 @@ class Controller(Node):
 
         # Publish the message
         self.pid_gains_pub.publish(msg)
+        # self.get_logger().info("TESTESTEST.")
 
     def pid_callback(self, msg):
         """
@@ -151,7 +152,7 @@ class Controller(Node):
             update_controller_gains(self.pid_vel['pitch'], msg.pidf_pitch_vel)
             update_controller_gains(self.pid_vel['yaw'], msg.pidf_yaw_vel)
 
-            self.get_logger().info("Successfully updated PID gains from external message.")
+            # self.get_logger().info("Successfully updated PID gains from external message.")
 
         except Exception as e:
             self.get_logger().error(f"Failed to update PID gains: {e}")
@@ -251,11 +252,11 @@ class Controller(Node):
             self.pid_vel['roll'].ff += (beta * err_roll_world) - (alpha * cur_ang_vel_world[0])
             self.pid_vel['pitch'].ff += (beta * err_pitch_world) - (alpha * cur_ang_vel_world[1])
 
-            self.publish_current_pid_gains()
+        self.publish_current_pid_gains()
 
         # --- 4. OUTER LOOP: POSITION -> VELOCITY ---
-        max_lin = 10
-        max_ang = 5
+        max_lin = 4
+        max_ang = 2
 
         # Include velocity feedforward directly into the commanded velocity calculations
         cmd_lin_vel_x_world = np.clip(self.pid_pos['x'].compute(err_x_world, 0.0, dt, cur_lin_vel_world[0]) + des_lin_vel_world[0], -max_lin, max_lin)
@@ -312,6 +313,7 @@ class Controller(Node):
                 
                 # Grab the most recent entry
                 self.last_csv_row = rows[-1]
+                self.get_logger().info(f"Loaded last PID data row from CSV: {self.last_csv_row}")
 
             # Helper to safely parse strings back to floats
             def get_val(key, default_val):
