@@ -19,14 +19,14 @@ class thruster_rpms(Node):
         self.thruster_pub = self.create_publisher(ThrusterSetpoint, 'thruster_rpms', 10)
 
     def forces_callback(self, msg):
-        self.get_logger().info(f'Received forces command: {msg}')
+        # self.get_logger().info(f'Received forces command: {msg}')
         thruster_forces = np.array(msg.thrust)
     
         motor_commands = np.array([force_to_rpm(f) for f in thruster_forces])
-        self.get_logger().info(f'Calculated motor commands: {motor_commands}')
+        # self.get_logger().info(f'Calculated motor commands: {motor_commands}')
         thruster_msg = ThrusterSetpoint()
         thruster_msg.thrust = motor_commands.tolist()
-        thruster_msg.armed = False  # Set to True to enable thrusters; set to False for testing without arming
+        thruster_msg.armed = True  # Set to True to enable thrusters; set to False for testing without arming
         self.thruster_pub.publish(thruster_msg)
 
 

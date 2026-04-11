@@ -18,10 +18,10 @@ class thruster_forces(Node):
         self.thruster_pub = self.create_publisher(ThrusterSetpoint, 'thruster_forces', 10)
 
     def wrench_callback(self, msg):
-        self.get_logger().info(f'Received wrench command: {msg}')
+        # self.get_logger().info(f'Received wrench command: {msg}')
         wrench = np.array([msg.force.x, msg.force.y, msg.force.z, msg.torque.x, msg.torque.y, msg.torque.z])
         motor_commands = solve_thrusts(wrench)
-        self.get_logger().info(f'Calculated motor commands: {motor_commands}')
+        # self.get_logger().info(f'Calculated motor commands: {motor_commands}')
         thruster_msg = ThrusterSetpoint()
         thruster_msg.thrust = motor_commands.tolist()
         thruster_msg.armed = True  # Set to True to enable thrusters; set to False for testing without arming
