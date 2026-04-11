@@ -160,6 +160,7 @@ class Controller(Node):
     def control_loop(self):
         """Main control loop triggered by the timer"""
         if self.current_state is None or self.desired_state is None:
+            self.publish_current_pid_gains()
             return
 
         dt = self.timer_period
