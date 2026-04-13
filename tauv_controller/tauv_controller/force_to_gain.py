@@ -15,7 +15,7 @@ import yaml
 from ament_index_python.packages import get_package_share_directory
 
 
-def _load_equations(package_name: str = "tauv_autonomy",
+def _load_equations(package_name: str = "tauv_controller",
                     filename: str = "motor_equations.yaml") -> dict:
     """Load motor equation coefficients from the installed YAML file."""
     share_dir = get_package_share_directory(package_name)

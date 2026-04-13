@@ -11,9 +11,9 @@ from tauv_msgs.msg import ThrusterSetpoint
 from geometry_msgs.msg import Wrench, Quaternion
 from tauv_msgs.msg import PID
 import numpy as np
-from tauv_autonomy.pid import PIDController
-from tauv_autonomy.utils import *
-from tauv_autonomy.thruster_saturation import resolve_wrenches
+from tauv_controller.pid import PIDController
+from tauv_controller.utils import *
+from tauv_controller.thruster_saturation import resolve_wrenches
 import csv
 from pathlib import Path
 from datetime import datetime
@@ -31,7 +31,7 @@ class Controller(Node):
             self.get_logger().info('Tuning is ENABLED.')
         else:
             self.get_logger().info('Tuning is DISABLED.')
-        self.pid_file_path = Path("/tauv-mono/ros_ws/src/tauv_autonomy/config/pid_history.csv")
+        self.pid_file_path = Path("/tauv-mono/ros_ws/src/tauv_controller/config/pid_history.csv")
         self.last_csv_row = {}
 
         # Subscriptions

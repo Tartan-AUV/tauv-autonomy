@@ -1,5 +1,5 @@
 from tauv_msgs.msg import ThrusterSetpoint
-from tauv_autonomy.force_optimizer import solve_thrusts
+from tauv_controller.force_optimizer import solve_thrusts
 from geometry_msgs.msg import Wrench
 import numpy as np
 

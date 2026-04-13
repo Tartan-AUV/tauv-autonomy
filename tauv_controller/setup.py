@@ -1,6 +1,6 @@
 from setuptools import find_packages, setup
 
-package_name = 'tauv_autonomy'
+package_name = 'tauv_controller'
 
 setup(
     name=package_name,
@@ -25,10 +25,10 @@ setup(
     },
     entry_points={
         'console_scripts': [
-            'thruster_forces = tauv_autonomy.thruster_forces:main', 
-            'controller = tauv_autonomy.controller:main',
-            'oscillating = tauv_autonomy.oscintillating:main',
-            'thruster_rpms = tauv_autonomy.thruster_rpms:main',
+            'thruster_forces = tauv_controller.thruster_forces:main', 
+            'controller = tauv_controller.controller:main',
+            'oscillating = tauv_controller.oscintillating:main',
+            'thruster_rpms = tauv_controller.thruster_rpms:main',
 
         ],
     },
