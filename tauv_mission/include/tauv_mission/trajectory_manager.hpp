@@ -48,6 +48,7 @@ private:
     nav_msgs::msg::Odometry currentOdometry;
     bool hasOdometry    = false;
     bool countdownActive = true;
+    bool pendingPublish  = false;
     int  countdownRemaining = COUNTDOWN_SECONDS;
 
     rclcpp::Subscription<nav_msgs::msg::Odometry>::SharedPtr odometrySubscription;

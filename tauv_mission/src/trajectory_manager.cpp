@@ -48,6 +48,7 @@ void TrajectoryManagerNode::countdownTimerCallback() {
         RCLCPP_INFO(this->get_logger(), "--- GO: Trajectory execution started ---");
         countdownActive = false;
         countdownTimer->cancel();
+        pendingPublish = true;
     }
 }
 
@@ -116,7 +117,11 @@ void TrajectoryManagerNode::loadSetpointsFromFile(const std::string& path) {
 
 void TrajectoryManagerNode::addSetpoint(Setpoint setpoint) {
     std::lock_guard<std::mutex> lock(trajectorySetpointsMutex);
+    bool wasEmpty = trajectorySetpoints.empty();
     trajectorySetpoints.push_back(setpoint);
+    if (!countdownActive && wasEmpty) {
+        pendingPublish = true;
+    }
     RCLCPP_INFO(this->get_logger(),
         "Setpoint added: pos=(%.2f, %.2f, %.2f) rpy=(%.2f, %.2f, %.2f) "
         "vel=(%.2f, %.2f, %.2f) ang_vel=(%.2f, %.2f, %.2f)",
@@ -147,7 +152,7 @@ void TrajectoryManagerNode::publishTimerCallback() {
 
     std::lock_guard<std::mutex> lock(trajectorySetpointsMutex);
 
-    if (trajectorySetpoints.empty()) {
+    if (trajectorySetpoints.empty() || !pendingPublish) {
         return;
     }
 
@@ -180,6 +185,7 @@ void TrajectoryManagerNode::publishTimerCallback() {
     desired.twist.twist.angular.z = sp.wz;
 
     desiredStatePublisher->publish(desired);
+    pendingPublish = false;
 }
 
 void TrajectoryManagerNode::checkGoalReached() {
@@ -214,6 +220,8 @@ void TrajectoryManagerNode::checkGoalReached() {
 
         if (trajectorySetpoints.empty()) {
             RCLCPP_INFO(this->get_logger(), "Trajectory complete. Waiting for more setpoints.");
+        } else {
+            pendingPublish = true;
         }
     }
 }
