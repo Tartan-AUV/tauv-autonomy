@@ -25,7 +25,7 @@ setpoints:
     position_tolerance: 0.2
     angular_tolerance: 0.2618  # pi/12
   
-  - x: 5
+  - x: 5.0
     y: 0.0
     z: -1.5
     roll: 0.0
@@ -41,7 +41,7 @@ setpoints:
     angular_tolerance: 0.2618  # pi/12
 
 
-  - x: 12
+  - x: 12.5
     y: 1
     z: -1.5
     roll: 0.0
@@ -56,8 +56,8 @@ setpoints:
     position_tolerance: 0.2
     angular_tolerance: 0.2618  # pi/12
 
-  - x: 12
-    y: -1
+  - x: 12.5
+    y: -2.5
     z: -1.5
     roll: 0.0
     pitch: 0.0
@@ -71,8 +71,8 @@ setpoints:
     position_tolerance: 0.2
     angular_tolerance: 0.2618  # pi/12
     
-  - x: 5
-    y: -1
+  - x: 7.0
+    y: -2.5
     z: -1.5
     roll: 0.0
     pitch: 0.0
@@ -83,10 +83,10 @@ setpoints:
     wx: 0.0
     wy: 0.0
     wz: 0.0
-    position_tolerance: 0
+    position_tolerance: 0.2
     angular_tolerance: 0.2618  # pi/12
-  
-  - x: 5
+
+  - x: 7.0
     y: 0.0
     z: -1.5
     roll: 0.0
@@ -98,9 +98,8 @@ setpoints:
     wx: 0.0
     wy: 0.0
     wz: 0.0
-    position_tolerance: 0
+    position_tolerance: 0.2
     angular_tolerance: 0.2618  # pi/12
-
 
   - x: 0.5
     y: 0.0
@@ -114,5 +113,5 @@ setpoints:
     wx: 0.0
     wy: 0.0
     wz: 0.0
-    position_tolerance: 0
+    position_tolerance: 0.2
     angular_tolerance: 0.2618  # pi/12

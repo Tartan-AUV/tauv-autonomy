@@ -31,7 +31,7 @@ class Controller(Node):
             self.get_logger().info('Tuning is ENABLED.')
         else:
             self.get_logger().info('Tuning is DISABLED.')
-        self.pid_file_path = Path("/tauv-mono/ros_ws/src/tauv_controller/config/pid_history.csv")
+        self.pid_file_path = Path("/tauv-mono/ros_ws/src/tauv_autonomy/tauv_controller/config/pid_history.csv")
         self.last_csv_row = {}
 
         # Subscriptions
@@ -66,7 +66,7 @@ class Controller(Node):
             'yaw':   PIDController(kp=9.0, ki=0.1, kd=2.0)
         }
 
-        # self.load_pid_data()
+        self.load_pid_data()
         if self.tune:
             for axis in ['z', 'roll', 'pitch']:
                 self.pid_vel[axis].kp = 0.0
@@ -117,7 +117,6 @@ class Controller(Node):
 
         # Publish the message
         self.pid_gains_pub.publish(msg)
-        # self.get_logger().info("TESTESTEST.")
 
     def pid_callback(self, msg):
         """
@@ -160,7 +159,7 @@ class Controller(Node):
     def control_loop(self):
         """Main control loop triggered by the timer"""
         if self.current_state is None or self.desired_state is None:
-            self.publish_current_pid_gains()
+            # self.publish_current_pid_gains()
             return
 
         dt = self.timer_period
@@ -253,7 +252,7 @@ class Controller(Node):
             self.pid_vel['roll'].ff += (beta * err_roll_world) - (alpha * cur_ang_vel_world[0])
             self.pid_vel['pitch'].ff += (beta * err_pitch_world) - (alpha * cur_ang_vel_world[1])
 
-        self.publish_current_pid_gains()
+        # self.publish_current_pid_gains()
 
         # --- 4. OUTER LOOP: POSITION -> VELOCITY ---
         max_lin = 4
@@ -298,49 +297,67 @@ class Controller(Node):
         self.thruster_pub.publish(thruster_forces)
         self.wrench_pub.publish(wrench)
 
+    def _csv_fieldnames(self):
+        """Canonical ordered column names matching the flat row structure."""
+        names = ['timestamp']
+        for loop_name, pid_dict in [('pos', self.pid_pos), ('vel', self.pid_vel)]:
+            for axis in pid_dict:
+                for gain in ['kp', 'ki', 'kd', 'ff']:
+                    names.append(f'{loop_name}_{axis}_{gain}')
+        return names
+
     def load_pid_data(self):
         """Reads the CSV and applies the very last row to the controllers."""
         if not self.pid_file_path.exists():
             self.get_logger().info('No CSV history found. Using hardcoded defaults.')
             return
-
         try:
+            fieldnames = self._csv_fieldnames()
             with open(self.pid_file_path, mode='r') as f:
-                reader = csv.DictReader(f)
-                rows = list(reader)
-                if not rows:
+                first_line = f.readline()
+                if not first_line.strip():
                     self.get_logger().info('CSV file is empty. Using hardcoded defaults.')
                     return
-                
-                # Grab the most recent entry
-                self.last_csv_row = rows[-1]
-                self.get_logger().info(f"Loaded last PID data row from CSV: {self.last_csv_row}")
+                # If the first line is a header row, let DictReader consume it normally.
+                # If it's raw data (old headerless file), rewind and supply fieldnames explicitly.
+                has_header = first_line.startswith('timestamp')
+                if not has_header:
+                    f.seek(0)
+                reader = csv.DictReader(f, fieldnames=None if has_header else fieldnames)
+                rows = list(reader)
 
-            # Helper to safely parse strings back to floats
+            if not rows:
+                self.get_logger().info('CSV file is empty. Using hardcoded defaults.')
+                return
+
+            self.last_csv_row = rows[-1]
+
             def get_val(key, default_val):
-                return float(self.last_csv_row.get(key, default_val))
+                val = self.last_csv_row.get(key)
+                if val is None:
+                    return float(default_val)
+                try:
+                    return float(val)
+                except (ValueError, TypeError):
+                    return float(default_val)
 
-            # Dynamically apply the loaded row to the dictionaries
             for loop_name, pid_dict in [('pos', self.pid_pos), ('vel', self.pid_vel)]:
                 for axis, pid in pid_dict.items():
                     pid.kp = get_val(f'{loop_name}_{axis}_kp', pid.kp)
                     pid.ki = get_val(f'{loop_name}_{axis}_ki', pid.ki)
                     pid.kd = get_val(f'{loop_name}_{axis}_kd', pid.kd)
                     pid.ff = get_val(f'{loop_name}_{axis}_ff', pid.ff)
-            
+
             self.get_logger().info(f"Loaded PID gains from previous run at: {self.last_csv_row.get('timestamp')}")
-        
+            self.publish_current_pid_gains()
+
         except Exception as e:
             self.get_logger().error(f'Failed to load CSV data: {e}')
 
-
     def save_pid_data(self):
         """Builds a flat row of all current gains and appends it to the CSV."""
-        
-        # Start the row with a timestamp
         row = {'timestamp': datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
 
-        # Read live controller values
         for loop_name, pid_dict in [('pos', self.pid_pos), ('vel', self.pid_vel)]:
             for axis, pid in pid_dict.items():
                 row[f'{loop_name}_{axis}_kp'] = pid.kp
@@ -348,8 +365,7 @@ class Controller(Node):
                 row[f'{loop_name}_{axis}_kd'] = pid.kd
                 row[f'{loop_name}_{axis}_ff'] = pid.ff
 
-        # FIX THE MISSING VALUES: If we are tuning, don't save the forced 0.0s. 
-        # Copy the true gains from the previous row instead.
+        # When tuning, preserve the true gains for zeroed-out axes from the previous row.
         if self.tune and self.last_csv_row:
             for axis in ['z', 'roll', 'pitch']:
                 for gain in ['kp', 'ki', 'kd']:
@@ -357,17 +373,16 @@ class Controller(Node):
                     if col_name in self.last_csv_row:
                         row[col_name] = self.last_csv_row[col_name]
 
-        # Append to the file
-        headers = list(row.keys())
+        fieldnames = self._csv_fieldnames()
         try:
+            is_new_or_empty = (
+                not self.pid_file_path.exists()
+                or self.pid_file_path.stat().st_size == 0
+            )
             with open(self.pid_file_path, mode='a', newline='') as f:
-                writer = csv.DictWriter(f, fieldnames=headers)
-                
-                # Write the header row only if this is a brand new file
-                if not self.pid_file_path.exists():
-                    self.get_logger().info('Creating new CSV file and writing header.')
+                writer = csv.DictWriter(f, fieldnames=fieldnames)
+                if is_new_or_empty:
                     writer.writeheader()
-                    
                 writer.writerow(row)
             self.get_logger().info('--- APPENDED NEW PID HISTORY ROW TO CSV ---')
         except Exception as e:
