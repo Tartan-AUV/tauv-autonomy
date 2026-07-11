@@ -1,6 +1,6 @@
 """
 /odometry/filtered (/nav_msgs/msg/Odometry): state estimation
-/desired_state (nav_msgs/msg/Odometry): desired state, ignore all the covariance matrices
+/setpoint (nav_msgs/msg/Odometry): desired state, ignore all the covariance matrices
 /thruster_forces (tauv_msgs/msg/ThrusterSetpoint): the outputted thruster commands
 """
 
@@ -36,7 +36,7 @@ class Controller(Node):
 
         # Subscriptions
         self.create_subscription(Odometry, '/odometry/filtered', self.odom_callback, 10)
-        self.create_subscription(Odometry, '/desired_state', self.desired_state_callback, 10)
+        self.create_subscription(Odometry, '/setpoint', self.setpoint_callback, 10)
         self.create_subscription(PID, '/pid', self.pid_callback, 10)
 
         # Publisher
@@ -46,7 +46,7 @@ class Controller(Node):
 
         # State variables
         self.current_state = None
-        self.desired_state = None
+        self.setpoint = None
 
         self.pid_pos = {
             'x':     PIDController(kp=1.1, kd=0.1),
@@ -83,9 +83,9 @@ class Controller(Node):
         """Update current state from filtered odometry"""
         self.current_state = msg
 
-    def desired_state_callback(self, msg):
+    def setpoint_callback(self, msg):
         """Update the desired target state"""
-        self.desired_state = msg
+        self.setpoint = msg
 
     def publish_current_pid_gains(self):
         msg = PID()
@@ -158,7 +158,7 @@ class Controller(Node):
 
     def control_loop(self):
         """Main control loop triggered by the timer"""
-        if self.current_state is None or self.desired_state is None:
+        if self.current_state is None or self.setpoint is None:
             # self.publish_current_pid_gains()
             return
 
@@ -166,10 +166,10 @@ class Controller(Node):
 
         # --- 1. POSE DATA IN WORLD FRAME ---
         cur_pos_world = self.current_state.pose.pose.position
-        des_pos_world = self.desired_state.pose.pose.position
+        des_pos_world = self.setpoint.pose.pose.position
 
         cur_orient_world = self.current_state.pose.pose.orientation
-        des_orient_world = self.desired_state.pose.pose.orientation
+        des_orient_world = self.setpoint.pose.pose.orientation
 
         w_d, x_d, y_d, z_d = des_orient_world.w, des_orient_world.x, des_orient_world.y, des_orient_world.z
         w_c, x_c, y_c, z_c = cur_orient_world.w, cur_orient_world.x, cur_orient_world.y, cur_orient_world.z
@@ -197,14 +197,14 @@ class Controller(Node):
         R_des_body_to_world = quat_to_rot_matrix(des_orient_world)
 
         des_lin_vel_body = np.array([
-            self.desired_state.twist.twist.linear.x,
-            self.desired_state.twist.twist.linear.y,
-            self.desired_state.twist.twist.linear.z
+            self.setpoint.twist.twist.linear.x,
+            self.setpoint.twist.twist.linear.y,
+            self.setpoint.twist.twist.linear.z
         ])
         des_ang_vel_body = np.array([
-            self.desired_state.twist.twist.angular.x,
-            self.desired_state.twist.twist.angular.y,
-            self.desired_state.twist.twist.angular.z
+            self.setpoint.twist.twist.angular.x,
+            self.setpoint.twist.twist.angular.y,
+            self.setpoint.twist.twist.angular.z
         ])
 
         des_lin_vel_world = R_des_body_to_world @ des_lin_vel_body

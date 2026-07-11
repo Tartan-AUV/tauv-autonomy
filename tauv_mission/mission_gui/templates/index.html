@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mission Planner</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">
+    <span class="brand-mark">◎</span>
+    <span class="brand-text">MISSION PLANNER</span>
+  </div>
+
+  <div class="mission-controls">
+    <div id="sequence-toolbar" class="toolbar-group">
+      <label class="field-inline">
+        <span>Mission</span>
+        <select id="mission-select"></select>
+      </label>
+      <button id="btn-new" class="btn btn-ghost">New</button>
+      <input id="mission-name" class="mission-name-input" placeholder="mission_name" spellcheck="false">
+    </div>
+
+    <div id="positions-toolbar" class="toolbar-group hidden">
+      <label class="field-inline">
+        <span>Config file</span>
+        <input type="text" class="mission-name-input" value="positions" disabled>
+      </label>
+    </div>
+
+    <button id="btn-save" class="btn btn-accent">Save</button>
+    <button id="btn-delete" class="btn btn-danger-ghost">Delete</button>
+  </div>
+</header>
+
+<div id="toast" class="toast"></div>
+
+<main class="layout">
+
+  <section class="sequence-pane">
+    <nav class="side-nav">
+      <div class="nav-group-label">Config</div>
+      <button type="button" id="nav-positions" class="nav-item">Positions</button>
+    </nav>
+
+    <div class="pane-head">
+      <h2>Sequence</h2>
+      <span class="pane-sub" id="step-count">0 steps</span>
+    </div>
+
+    <ol id="step-list" class="step-list"></ol>
+
+    <div class="add-row">
+      <button class="btn btn-add" data-type="move_to">+ Move To</button>
+      <button class="btn btn-add" data-type="actuate">+ Actuate</button>
+      <button class="btn btn-add" data-type="toggle_watchdog">+ Toggle Watchdog</button>
+    </div>
+  </section>
+
+  <section class="editor-pane">
+    <div id="editor-empty" class="editor-empty">
+      <p>Select a step to edit it, or add a new one.</p>
+      <p class="dim">Steps run in order, top to bottom. Each one must succeed before the next starts &mdash; same as the planner's fake sequence node. Edits here apply immediately; nothing is written to disk until you hit Save.</p>
+    </div>
+
+    <div id="editor-form" class="editor-form hidden">
+      <input type="hidden" id="edit-index">
+
+      <div class="editor-header">
+        <h2 id="editor-heading">Step</h2>
+        <button type="button" id="btn-remove" class="btn btn-danger-ghost">Remove step</button>
+      </div>
+
+      <div class="editor-section">
+        <label class="field">
+          <span>Label</span>
+          <input type="text" id="f-label" placeholder="e.g. Approach gate">
+        </label>
+      </div>
+
+      <!-- move_to fields -->
+      <div id="fields-move_to" class="editor-section type-fields hidden">
+        <label class="field">
+          <span>Reference waypoint</span>
+          <select id="f-reference">
+            <option value="">— manual pose (no reference) —</option>
+          </select>
+        </label>
+
+        <div class="pose-grid">
+          <div class="pose-col">
+            <div class="pose-col-label" id="pose-offset-label">Offset (m / rad)</div>
+            <label class="field-mini"><span>X</span><input type="number" step="any" id="f-x"></label>
+            <label class="field-mini"><span>Y</span><input type="number" step="any" id="f-y"></label>
+            <label class="field-mini"><span>Z</span><input type="number" step="any" id="f-z"></label>
+            <label class="field-mini"><span>Roll</span><input type="number" step="any" id="f-roll"></label>
+            <label class="field-mini"><span>Pitch</span><input type="number" step="any" id="f-pitch"></label>
+            <label class="field-mini"><span>Yaw</span><input type="number" step="any" id="f-yaw"></label>
+          </div>
+
+          <div class="pose-col">
+            <div class="pose-col-label">Target velocity (m/s / rad/s)</div>
+            <label class="field-mini"><span>X</span><input type="number" step="any" id="f-vx" value="0"></label>
+            <label class="field-mini"><span>Y</span><input type="number" step="any" id="f-vy" value="0"></label>
+            <label class="field-mini"><span>Z</span><input type="number" step="any" id="f-vz" value="0"></label>
+            <label class="field-mini"><span>Roll</span><input type="number" step="any" id="f-vroll" value="0"></label>
+            <label class="field-mini"><span>Pitch</span><input type="number" step="any" id="f-vpitch" value="0"></label>
+            <label class="field-mini"><span>Yaw</span><input type="number" step="any" id="f-vyaw" value="0"></label>
+          </div>
+        </div>
+
+        <div class="resolved-pose">
+          <span class="resolved-label">Resolved absolute pose</span>
+          <code id="resolved-pose-value">0.000, 0.000, 0.000, 0.000, 0.000, 0.000</code>
+        </div>
+      </div>
+
+      <!-- actuate fields -->
+      <div id="fields-actuate" class="editor-section type-fields hidden">
+        <label class="field">
+          <span>Mechanism</span>
+          <select id="f-mechanism">
+            <option value="dropper">dropper</option>
+            <option value="torpedo">torpedo</option>
+          </select>
+        </label>
+      </div>
+
+      <!-- toggle_watchdog fields -->
+      <div id="fields-toggle_watchdog" class="editor-section type-fields hidden">
+        <label class="field">
+          <span>Watchdog state</span>
+          <select id="f-watchdog-enabled">
+            <option value="true">Enable</option>
+            <option value="false">Disable</option>
+          </select>
+        </label>
+      </div>
+    </div>
+
+    <div id="positions-editor" class="positions-editor hidden">
+      <div class="editor-header">
+        <h2>Config &middot; Positions</h2>
+      </div>
+      <p class="positions-intro">These are the named waypoints <code>move_to</code> steps can reference. Editing a value here shifts every step in every mission that references it, once saved.</p>
+      <div id="positions-list"></div>
+      <div class="editor-section add-position-section">
+        <label class="field">
+          <span>New waypoint name</span>
+          <div class="add-position-row">
+            <input type="text" id="new-position-name" placeholder="e.g. buoy" spellcheck="false">
+            <button type="button" id="btn-add-position" class="btn btn-add">+ Add Waypoint</button>
+          </div>
+        </label>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>

@@ -1,0 +1,73 @@
+{
+  "steps": [
+    {
+      "label": "Approach gate",
+      "offset": [
+        0,
+        1,
+        0,
+        0,
+        0,
+        0
+      ],
+      "reference": "gate",
+      "target_pose": [
+        10,
+        11,
+        1,
+        0,
+        0,
+        0
+      ],
+      "target_velocity": [
+        1,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "type": "move_to"
+    },
+    {
+      "label": "Rise over bins",
+      "offset": [
+        0,
+        0,
+        1,
+        0,
+        0,
+        0
+      ],
+      "reference": "bins",
+      "target_pose": [
+        10,
+        10,
+        2,
+        0,
+        0,
+        0
+      ],
+      "target_velocity": [
+        0,
+        0,
+        0.1,
+        0,
+        0,
+        0
+      ],
+      "type": "move_to"
+    },
+    {
+      "label": "Drop marker",
+      "mechanism": "dropper",
+      "type": "actuate"
+    },
+    {
+      "type": "toggle_watchdog",
+      "label": "Toggle watchdog",
+      "enabled": true
+    }
+  ],
+  "name": "example_mission"
+}
