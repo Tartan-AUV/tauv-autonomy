@@ -17,6 +17,7 @@ from pathlib import Path
 
 import rclpy
 from rclpy.node import Node
+from ament_index_python.packages import get_package_share_directory
 from nav_msgs.msg import Odometry
 from geometry_msgs.msg import PoseArray
 from std_msgs.msg import String, Bool
@@ -45,12 +46,20 @@ class MissionPlanner(Node):
             PoseArray, '/cv/positions', self.cv_callback, 10)
 
         self.traj_pub = self.create_publisher(Odometry, '/odometry/target', 10)
-        self.actuator_pub = self.create_publisher(String, '/actuator', 10)
+        self.actuator_pub = self.create_publisher(String, '/servo/task', 10)
         self.watchdog_pub = self.create_publisher(Bool, '/watchdog/toggle', 10)
 
-        # Mission plan is now loaded from disk on launch. Point this at
-        # whatever file the mission_gui editor saved, e.g. via:
-        #   ros2 run <pkg> mission_planner --ros-args -p mission_file:=/path/to/missions/finals.json
+        # Mission plan is now loaded from disk on launch, resolved against
+        # this package's installed share directory. Point mission_file at
+        # whatever the mission_gui editor saved, e.g.:
+        #   ros2 run <pkg> mission_planner --ros-args -p mission_file:=finals.json
+        #
+        # NOTE: this resolves to the *installed* share dir
+        # (get_package_share_directory), not the mission_gui/missions/
+        # folder the editor writes to directly. Make sure that folder is
+        # installed into share (setup.py data_files / CMakeLists install)
+        # or symlinked, or missions saved from the GUI won't show up here
+        # until you rebuild.
         self.declare_parameter('mission_file', 'example_mission.json')
         mission_file = self.get_parameter('mission_file').get_parameter_value().string_value
         missions_dir = Path(get_package_share_directory('tauv_mission')) / 'missions'
@@ -96,10 +105,12 @@ class MissionPlanner(Node):
 
             elif step_type == 'actuate':
                 mechanism = step.get('mechanism')
-                if not mechanism:
-                    self.get_logger().error(f'Skipping malformed actuate step "{label}" (#{i}): missing mechanism')
+                setpoint = step.get('setpoint')
+                if not mechanism or not setpoint:
+                    self.get_logger().error(
+                        f'Skipping malformed actuate step "{label}" (#{i}): missing mechanism or setpoint')
                     continue
-                plan.append((self.actuate, mechanism))
+                plan.append((self.actuate, mechanism, setpoint))
 
             elif step_type == 'toggle_watchdog':
                 enabled = step.get('enabled')
@@ -191,11 +202,29 @@ class MissionPlanner(Node):
 
         return self.statuses.get(task_id, self.RUNNING)
 
-    def actuate(self, mechanism):
+    def actuate(self, mechanism, setpoint):
         task_id = "actuator"
-
         msg = String()
-        msg.data = mechanism
+
+        # TODO: fill in the actual /servo/task payload for each
+        # (mechanism, setpoint) pair. Only the torpedo case had a value so
+        # far (carried over as-is); everything else -- including what
+        # "setpoint" should do to it -- is still a placeholder.
+        if mechanism == "torpedo":
+            if setpoint == "RESET":
+                msg.data = "{data: 'reset_torpedo'}"
+            elif setpoint == "SETPOINT 1":
+                msg.data = "{data: 'trump'}"
+            elif setpoint == "SETPOINT 2":
+                msg.data = "{data: 'biden'}"
+        elif mechanism == "dropper":
+            if setpoint == "RESET":
+                msg.data = "{data: 'reset_dropper'}"
+            elif setpoint == "SETPOINT 1":
+                msg.data = "{data: 'farnam'}"
+            elif setpoint == "SETPOINT 2":
+                msg.data = "{data: 'fence'}"
+
         self.actuator_pub.publish(msg)
 
         return self.statuses.get(task_id, self.RUNNING)

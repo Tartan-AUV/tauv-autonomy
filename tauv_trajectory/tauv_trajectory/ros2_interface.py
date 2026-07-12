@@ -26,7 +26,7 @@ from nav_msgs.msg import Odometry
 from geometry_msgs.msg import Vector3, Quaternion, Point, AccelStamped
 from tauv_msgs.msg import Status
 
-from core import PurePursuitPlanner, VehicleState
+from .core import PurePursuitPlanner, VehicleState
 
 
 def xyz_to_numpy(msg) -> np.ndarray:

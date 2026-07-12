@@ -52,6 +52,7 @@ function defaultActuateStep() {
     type: "actuate",
     label: "New actuation",
     mechanism: "dropper",
+    setpoint: "RESET",
   };
 }
 
@@ -73,7 +74,7 @@ function stepDetailText(step) {
   if (step.type === "toggle_watchdog") {
     return `toggle_watchdog  ${step.enabled ? "ENABLE" : "DISABLE"}`;
   }
-  return `actuate  ${step.mechanism || "—"}`;
+  return `actuate  ${step.mechanism || "—"} / ${step.setpoint || "—"}`;
 }
 
 function renderStepList() {
@@ -167,6 +168,7 @@ function showEditor(step) {
     updatePoseLabelAndResolved();
   } else if (step.type === "actuate") {
     el("f-mechanism").value = step.mechanism || "dropper";
+    el("f-setpoint").value = step.setpoint || "RESET";
   } else if (step.type === "toggle_watchdog") {
     el("f-watchdog-enabled").value = step.enabled ? "true" : "false";
   }
@@ -429,6 +431,7 @@ function syncFormToStep() {
     updatePoseLabelAndResolved();
   } else if (step.type === "actuate") {
     step.mechanism = el("f-mechanism").value;
+    step.setpoint = el("f-setpoint").value;
   } else if (step.type === "toggle_watchdog") {
     step.enabled = el("f-watchdog-enabled").value === "true";
   }
@@ -498,7 +501,7 @@ async function init() {
     "f-label",
     "f-reference", "f-x", "f-y", "f-z", "f-roll", "f-pitch", "f-yaw",
     "f-vx", "f-vy", "f-vz", "f-vroll", "f-vpitch", "f-vyaw",
-    "f-mechanism", "f-watchdog-enabled",
+    "f-mechanism", "f-setpoint", "f-watchdog-enabled",
   ].forEach((id) => {
     el(id).addEventListener("input", syncFormToStep);
     el(id).addEventListener("change", syncFormToStep);

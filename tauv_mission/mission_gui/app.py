@@ -54,6 +54,8 @@ def validate_steps(steps):
         elif step_type == "actuate":
             if not step.get("mechanism"):
                 abort(400, description=f'Step {i + 1} ("actuate") needs a mechanism name.')
+            if not step.get("setpoint"):
+                abort(400, description=f'Step {i + 1} ("actuate") needs a setpoint.')
 
         elif step_type == "toggle_watchdog":
             if not isinstance(step.get("enabled"), bool):
