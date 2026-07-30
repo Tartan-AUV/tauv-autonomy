@@ -25,9 +25,14 @@
     </div>
 
     <div id="positions-toolbar" class="toolbar-group hidden">
+      <button id="btn-new-positions" class="btn btn-ghost">New</button>
+      <input id="positions-name" class="mission-name-input" placeholder="positions_file" spellcheck="false">
+    </div>
+
+    <div class="toolbar-group">
       <label class="field-inline">
-        <span>Config file</span>
-        <input type="text" class="mission-name-input" value="positions" disabled>
+        <span>Positions</span>
+        <select id="positions-select"></select>
       </label>
     </div>
 
@@ -57,6 +62,9 @@
       <button class="btn btn-add" data-type="move_to">+ Move To</button>
       <button class="btn btn-add" data-type="actuate">+ Actuate</button>
       <button class="btn btn-add" data-type="toggle_watchdog">+ Toggle Watchdog</button>
+      <button class="btn btn-add" data-type="wait">+ Wait</button>
+      <button class="btn btn-add" data-type="cli">+ CLI</button>
+      <button class="btn btn-add" data-type="cli_stop">+ Stop CLI</button>
     </div>
   </section>
 
@@ -86,13 +94,12 @@
         <label class="field">
           <span>Reference waypoint</span>
           <select id="f-reference">
-            <option value="">— manual pose (no reference) —</option>
           </select>
         </label>
 
         <div class="pose-grid">
           <div class="pose-col">
-            <div class="pose-col-label" id="pose-offset-label">Offset (m / rad)</div>
+            <div class="pose-col-label" id="pose-offset-label">Offset from reference (task frame, m / rad)</div>
             <label class="field-mini"><span>X</span><input type="number" step="any" id="f-x"></label>
             <label class="field-mini"><span>Y</span><input type="number" step="any" id="f-y"></label>
             <label class="field-mini"><span>Z</span><input type="number" step="any" id="f-z"></label>
@@ -102,7 +109,7 @@
           </div>
 
           <div class="pose-col">
-            <div class="pose-col-label">Target velocity (m/s / rad/s)</div>
+            <div class="pose-col-label">Target velocity (task frame, m/s / rad/s)</div>
             <label class="field-mini"><span>X</span><input type="number" step="any" id="f-vx" value="0"></label>
             <label class="field-mini"><span>Y</span><input type="number" step="any" id="f-vy" value="0"></label>
             <label class="field-mini"><span>Z</span><input type="number" step="any" id="f-vz" value="0"></label>
@@ -148,13 +155,39 @@
           </select>
         </label>
       </div>
+
+      <!-- wait fields -->
+      <div id="fields-wait" class="editor-section type-fields hidden">
+        <label class="field">
+          <span>Seconds</span>
+          <input type="number" step="any" min="0" id="f-wait-seconds" value="1">
+        </label>
+      </div>
+
+      <!-- cli fields -->
+      <div id="fields-cli" class="editor-section type-fields hidden">
+        <label class="field">
+          <span>Command</span>
+          <input type="text" id="f-cli-command" placeholder="e.g. ros2 run tauv_mission some_tool" spellcheck="false">
+        </label>
+        <p class="positions-intro">Run directly on the machine running <code>mission_planner</code> (e.g. <code>ros2 launch ...</code>), launched once in the background when this step starts. The step then waits for a <code>/mission/status</code> message with id <code>"command"</code> before moving on -- whatever you launch is expected to report its own done/ready status. The process is left running after the step succeeds; add a <strong>Stop CLI</strong> step later to kill it. Give this step a unique label -- that's how Stop CLI finds it.</p>
+      </div>
+
+      <!-- cli_stop fields -->
+      <div id="fields-cli_stop" class="editor-section type-fields hidden">
+        <label class="field">
+          <span>CLI step to stop</span>
+          <select id="f-cli-stop-target"></select>
+        </label>
+        <p class="positions-intro">Kills whatever the selected earlier <strong>CLI</strong> step launched: SIGINT to its whole process group first (the normal ctrl-C shutdown for launch files), escalating to SIGKILL if it's still alive after 10 seconds. Succeeds on its own once the process is gone -- no <code>/mission/status</code> message needed.</p>
+      </div>
     </div>
 
     <div id="positions-editor" class="positions-editor hidden">
       <div class="editor-header">
         <h2>Config &middot; Positions</h2>
       </div>
-      <p class="positions-intro">These are the named waypoints <code>move_to</code> steps can reference. Editing a value here shifts every step in every mission that references it, once saved.</p>
+      <p class="positions-intro">These seed <code>self.positions</code> on the sub at launch. <code>move_to</code> offsets are relative to whichever one they reference, rotated into that task's own heading -- <code>start</code> is the fixed origin (0,0,0) for absolute positioning. CV overwrites the rest live once the sub is running, so editing values here only affects the initial guess before anything's been detected. You can keep several positions files (e.g. one per pool); the <strong>Positions</strong> dropdown in the top bar picks which one is active, and saving a mission records that choice so the planner loads the same file at launch.</p>
       <div id="positions-list"></div>
       <div class="editor-section add-position-section">
         <label class="field">

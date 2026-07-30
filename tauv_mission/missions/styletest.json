@@ -1,0 +1,161 @@
+{
+  "steps": [
+    {
+      "label": "Wait",
+      "seconds": 5,
+      "type": "wait"
+    },
+    {
+      "label": "Submerge",
+      "offset": [
+        1,
+        0,
+        -1,
+        0,
+        0,
+        0
+      ],
+      "reference": "start",
+      "target_pose": [
+        1,
+        0,
+        -1,
+        0,
+        0,
+        0
+      ],
+      "target_velocity": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "type": "move_to"
+    },
+    {
+      "label": "Wait",
+      "seconds": 5,
+      "type": "wait"
+    },
+    {
+      "label": "Point 90",
+      "offset": [
+        1.5,
+        0,
+        -1,
+        0,
+        0,
+        1.57
+      ],
+      "reference": "start",
+      "target_pose": [
+        1.5,
+        0,
+        -1,
+        0,
+        0,
+        1.57
+      ],
+      "target_velocity": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "type": "move_to"
+    },
+    {
+      "label": "Point 180",
+      "offset": [
+        2,
+        0,
+        -1,
+        0,
+        0,
+        3.14
+      ],
+      "reference": "start",
+      "target_pose": [
+        2,
+        0,
+        -1,
+        0,
+        0,
+        3.14
+      ],
+      "target_velocity": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "type": "move_to"
+    },
+    {
+      "label": "Point 270",
+      "offset": [
+        2.5,
+        0,
+        -1,
+        0,
+        0,
+        4.71
+      ],
+      "reference": "start",
+      "target_pose": [
+        2.5,
+        0,
+        -1,
+        0,
+        0,
+        -1.5731853071795867
+      ],
+      "target_velocity": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "type": "move_to"
+    },
+    {
+      "type": "move_to",
+      "label": "Point 360",
+      "reference": "start",
+      "offset": [
+        3,
+        0,
+        -1,
+        0,
+        0,
+        0
+      ],
+      "target_pose": [
+        3,
+        0,
+        -1,
+        0,
+        0,
+        0
+      ],
+      "target_velocity": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    }
+  ],
+  "positions_file": "positions",
+  "name": "styletest"
+}

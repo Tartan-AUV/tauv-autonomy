@@ -1,0 +1,1013 @@
+{
+  "steps": [
+    {
+      "label": "Wait",
+      "seconds": 20,
+      "type": "wait"
+    },
+    {
+      "label": "Submerge",
+      "offset": [
+        1,
+        0,
+        -1,
+        0,
+        0,
+        0
+      ],
+      "reference": "start",
+      "target_pose": [
+        1,
+        0,
+        -1,
+        0,
+        0,
+        0
+      ],
+      "target_velocity": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "type": "move_to"
+    },
+    {
+      "label": "Wait",
+      "seconds": 3,
+      "type": "wait"
+    },
+    {
+      "label": "Move to gate",
+      "offset": [
+        -1,
+        0.762,
+        -1,
+        0,
+        0,
+        0
+      ],
+      "reference": "gate",
+      "target_pose": [
+        3.58,
+        0.942,
+        -1,
+        0,
+        0,
+        0
+      ],
+      "target_velocity": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "type": "move_to"
+    },
+    {
+      "label": "Point 90",
+      "offset": [
+        -0.6,
+        0.762,
+        -1,
+        0,
+        0,
+        1.57
+      ],
+      "reference": "gate",
+      "target_pose": [
+        3.98,
+        0.942,
+        -1,
+        0,
+        0,
+        1.57
+      ],
+      "target_velocity": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "type": "move_to"
+    },
+    {
+      "label": "Point 180",
+      "offset": [
+        0,
+        0.762,
+        -1,
+        0,
+        0,
+        3.14
+      ],
+      "reference": "gate",
+      "target_pose": [
+        4.58,
+        0.942,
+        -1,
+        0,
+        0,
+        3.14
+      ],
+      "target_velocity": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "type": "move_to"
+    },
+    {
+      "label": "Point 270",
+      "offset": [
+        0.6,
+        0.762,
+        -1,
+        0,
+        0,
+        4.71
+      ],
+      "reference": "gate",
+      "target_pose": [
+        5.18,
+        0.942,
+        -1,
+        0,
+        0,
+        -1.5731853071795867
+      ],
+      "target_velocity": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "type": "move_to"
+    },
+    {
+      "label": "Point 360",
+      "offset": [
+        2,
+        0.762,
+        -1,
+        0,
+        0,
+        0
+      ],
+      "reference": "gate",
+      "target_pose": [
+        6.58,
+        0.942,
+        -1,
+        0,
+        0,
+        0
+      ],
+      "target_velocity": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "type": "move_to"
+    },
+    {
+      "label": "Wait",
+      "seconds": 3,
+      "type": "wait"
+    },
+    {
+      "label": "First Slalom Prime",
+      "offset": [
+        -1,
+        0.762,
+        -1.3,
+        0,
+        0,
+        0
+      ],
+      "reference": "slalom0",
+      "target_pose": [
+        8.47,
+        0.838,
+        -1.3,
+        0,
+        0,
+        0
+      ],
+      "target_velocity": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "type": "move_to"
+    },
+    {
+      "label": "Wait",
+      "seconds": 3,
+      "type": "wait"
+    },
+    {
+      "label": "First Slalom",
+      "offset": [
+        1,
+        0.762,
+        -1.3,
+        0,
+        0,
+        0
+      ],
+      "reference": "slalom0",
+      "target_pose": [
+        10.47,
+        0.838,
+        -1.3,
+        0,
+        0,
+        0
+      ],
+      "target_velocity": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "type": "move_to"
+    },
+    {
+      "label": "Wait",
+      "seconds": 3,
+      "type": "wait"
+    },
+    {
+      "label": "Second Slalom Prime",
+      "offset": [
+        -1,
+        0.762,
+        -1.3,
+        0,
+        0,
+        0
+      ],
+      "reference": "slalom1",
+      "target_pose": [
+        10.9,
+        1.862,
+        -1.3,
+        0,
+        0,
+        0
+      ],
+      "target_velocity": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "type": "move_to"
+    },
+    {
+      "label": "Wait",
+      "seconds": 3,
+      "type": "wait"
+    },
+    {
+      "label": "Second Slalom",
+      "offset": [
+        1,
+        0.762,
+        -1.3,
+        0,
+        0,
+        0
+      ],
+      "reference": "slalom1",
+      "target_pose": [
+        12.9,
+        1.862,
+        -1.3,
+        0,
+        0,
+        0
+      ],
+      "target_velocity": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "type": "move_to"
+    },
+    {
+      "label": "Wait",
+      "seconds": 3,
+      "type": "wait"
+    },
+    {
+      "label": "Third Slalom Prime",
+      "offset": [
+        -1,
+        0.762,
+        -1.3,
+        0,
+        0,
+        0
+      ],
+      "reference": "slalom2",
+      "target_pose": [
+        12.59,
+        0.652,
+        -1.3,
+        0,
+        0,
+        0
+      ],
+      "target_velocity": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "type": "move_to"
+    },
+    {
+      "label": "Wait",
+      "seconds": 3,
+      "type": "wait"
+    },
+    {
+      "label": "Third Slalom",
+      "offset": [
+        1,
+        0.762,
+        -1.3,
+        0,
+        0,
+        0
+      ],
+      "reference": "slalom2",
+      "target_pose": [
+        14.59,
+        0.652,
+        -1.3,
+        0,
+        0,
+        0
+      ],
+      "target_velocity": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "type": "move_to"
+    },
+    {
+      "label": "Wait",
+      "seconds": 3,
+      "type": "wait"
+    },
+    {
+      "label": "Banner Far",
+      "offset": [
+        -4,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "reference": "bannerCenter",
+      "target_pose": [
+        13.120000000000001,
+        3.86,
+        -0.7,
+        0,
+        0,
+        0
+      ],
+      "target_velocity": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "type": "move_to"
+    },
+    {
+      "command": "bash -c \"ros2 topic pub --once /mission/status tauv_msgs/msg/Status \\\"{id: 'command', status: 1}\\\" && sleep 3 && ros2 topic pub --once /mission/status tauv_msgs/msg/Status \\\"{id: 'command', status: 1}\\\"\"",
+      "label": "Funny CLI",
+      "type": "cli"
+    },
+    {
+      "command": "ros2 run tauv_vision bannerTask",
+      "label": "Start banner vision",
+      "type": "cli"
+    },
+    {
+      "label": "Wait",
+      "seconds": 15,
+      "type": "wait"
+    },
+    {
+      "command": "bash -c \"ros2 topic pub --once /mission/status tauv_msgs/msg/Status \\\"{id: 'command', status: 1}\\\" ; ros2 topic pub --once /vision/banner/control std_msgs/msg/String \\\"{data: 'stop'}\\\"\"",
+      "label": "Pause Vision",
+      "type": "cli"
+    },
+    {
+      "label": "Banner Middle",
+      "offset": [
+        -2.5,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "reference": "bannerCenter",
+      "target_pose": [
+        16.42,
+        3.75,
+        -0.6749999999999999,
+        0,
+        0,
+        0
+      ],
+      "target_velocity": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "type": "move_to"
+    },
+    {
+      "command": "bash -c \"ros2 topic pub --once /mission/status tauv_msgs/msg/Status \\\"{id: 'command', status: 1}\\\" ; ros2 topic pub --once /vision/banner/control std_msgs/msg/String \\\"{data: 'reset'}\\\"\"",
+      "label": "Reset Vision",
+      "type": "cli"
+    },
+    {
+      "label": "Wait",
+      "seconds": 10,
+      "type": "wait"
+    },
+    {
+      "label": "Banner Close",
+      "offset": [
+        -1.3,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "reference": "bannerCenter",
+      "target_pose": [
+        16.42,
+        3.75,
+        -0.6749999999999999,
+        0,
+        0,
+        0
+      ],
+      "target_velocity": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "type": "move_to"
+    },
+    {
+      "command": "bash -c \"ros2 topic pub --once /mission/status tauv_msgs/msg/Status \\\"{id: 'command', status: 1}\\\" ; ros2 topic pub --once /vision/banner/control std_msgs/msg/String \\\"{data: 'reset'}\\\"\"",
+      "label": "Reset Vision (again)",
+      "type": "cli"
+    },
+    {
+      "label": "Wait",
+      "seconds": 10,
+      "type": "wait"
+    },
+    {
+      "label": "Move to First Torpedo",
+      "offset": [
+        -0.7,
+        -0.11,
+        0.025,
+        0,
+        0,
+        0
+      ],
+      "reference": "banner3",
+      "target_pose": [
+        16.42,
+        3.75,
+        -0.6749999999999999,
+        0,
+        0,
+        0
+      ],
+      "target_velocity": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "type": "move_to"
+    },
+    {
+      "label": "Wait",
+      "seconds": 3,
+      "type": "wait"
+    },
+    {
+      "label": "FIRE 1",
+      "mechanism": "torpedo",
+      "setpoint": "SETPOINT_1",
+      "type": "actuate"
+    },
+    {
+      "label": "Wait",
+      "seconds": 1,
+      "type": "wait"
+    },
+    {
+      "label": "Reset Torpedo",
+      "mechanism": "torpedo",
+      "setpoint": "RESET",
+      "type": "actuate"
+    },
+    {
+      "label": "Wait",
+      "seconds": 1,
+      "type": "wait"
+    },
+    {
+      "label": "Fire 1 (again)",
+      "mechanism": "torpedo",
+      "setpoint": "SETPOINT_1",
+      "type": "actuate"
+    },
+    {
+      "label": "Wait",
+      "seconds": 1,
+      "type": "wait"
+    },
+    {
+      "label": "Banner Reset Position",
+      "offset": [
+        -1.3,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "reference": "bannerCenter",
+      "target_pose": [
+        15.82,
+        3.86,
+        -0.7,
+        0,
+        0,
+        0
+      ],
+      "target_velocity": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "type": "move_to"
+    },
+    {
+      "command": "bash -c \"ros2 topic pub --once /mission/status tauv_msgs/msg/Status \\\"{id: 'command', status: 1}\\\" ; ros2 topic pub --once /vision/banner/control std_msgs/msg/String \\\"{data: 'reset'}\\\"\"",
+      "label": "Reset Vision (again again)",
+      "type": "cli"
+    },
+    {
+      "command": "bash -c \"ros2 topic pub --once /mission/status tauv_msgs/msg/Status \\\"{id: 'command', status: 1}\\\" ; ros2 topic pub --once /vision/banner/control std_msgs/msg/String \\\"{data: 'start'}\\\"\"",
+      "label": "Continue Vision",
+      "type": "cli"
+    },
+    {
+      "label": "Wait",
+      "seconds": 10,
+      "type": "wait"
+    },
+    {
+      "label": "Kill banner vision",
+      "target": "Start banner vision",
+      "type": "cli_stop"
+    },
+    {
+      "command": "bash -c \"ros2 topic pub --once /mission/status tauv_msgs/msg/Status \\\"{id: 'command', status: 1}\\\" ; pkill -f bannerTask\"",
+      "label": "Kill banner vision (again)",
+      "type": "cli"
+    },
+    {
+      "label": "Move to Second Torpedo",
+      "offset": [
+        -0.7,
+        -0.15,
+        0.025,
+        0,
+        0,
+        0
+      ],
+      "reference": "banner2",
+      "target_pose": [
+        16.42,
+        3.71,
+        -0.6749999999999999,
+        0,
+        0,
+        0
+      ],
+      "target_velocity": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "type": "move_to"
+    },
+    {
+      "label": "Wait",
+      "seconds": 3,
+      "type": "wait"
+    },
+    {
+      "label": "FIRE 2",
+      "mechanism": "torpedo",
+      "setpoint": "SETPOINT_2",
+      "type": "actuate"
+    },
+    {
+      "label": "Wait",
+      "seconds": 1,
+      "type": "wait"
+    },
+    {
+      "label": "Reset Torpedo",
+      "mechanism": "torpedo",
+      "setpoint": "RESET",
+      "type": "actuate"
+    },
+    {
+      "label": "Wait",
+      "seconds": 1,
+      "type": "wait"
+    },
+    {
+      "label": "Fire 2 (again)",
+      "mechanism": "torpedo",
+      "setpoint": "SETPOINT_2",
+      "type": "actuate"
+    },
+    {
+      "label": "Wait",
+      "seconds": 1,
+      "type": "wait"
+    },
+    {
+      "label": "Reset Torpedo",
+      "mechanism": "torpedo",
+      "setpoint": "RESET",
+      "type": "actuate"
+    },
+    {
+      "label": "Move Back",
+      "offset": [
+        -2,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "reference": "banner0",
+      "target_pose": [
+        15.120000000000001,
+        3.86,
+        -0.7,
+        0,
+        0,
+        0
+      ],
+      "target_velocity": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "type": "move_to"
+    },
+    {
+      "label": "Wait",
+      "seconds": 3,
+      "type": "wait"
+    },
+    {
+      "label": "Move to bins halfway",
+      "offset": [
+        16,
+        -0.5,
+        -1,
+        0,
+        0,
+        0
+      ],
+      "reference": "start",
+      "target_pose": [
+        16,
+        -0.5,
+        -1,
+        0,
+        0,
+        0
+      ],
+      "target_velocity": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "type": "move_to"
+    },
+    {
+      "label": "Wait",
+      "seconds": 3,
+      "type": "wait"
+    },
+    {
+      "label": "Move to Bins",
+      "offset": [
+        -0.222,
+        0.2115,
+        -1,
+        0,
+        0,
+        0
+      ],
+      "reference": "bins0",
+      "target_pose": [
+        14.938,
+        -4.4385,
+        -1,
+        0,
+        0,
+        0
+      ],
+      "target_velocity": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "type": "move_to"
+    },
+    {
+      "label": "Wait",
+      "seconds": 3,
+      "type": "wait"
+    },
+    {
+      "label": "DROP 1",
+      "mechanism": "dropper",
+      "setpoint": "SETPOINT_1",
+      "type": "actuate"
+    },
+    {
+      "label": "Wait",
+      "seconds": 1,
+      "type": "wait"
+    },
+    {
+      "label": "DROP 2",
+      "mechanism": "dropper",
+      "setpoint": "SETPOINT_2",
+      "type": "actuate"
+    },
+    {
+      "label": "Wait",
+      "seconds": 1,
+      "type": "wait"
+    },
+    {
+      "label": "DROP RESET",
+      "mechanism": "dropper",
+      "setpoint": "RESET",
+      "type": "actuate"
+    },
+    {
+      "label": "Wait",
+      "seconds": 1,
+      "type": "wait"
+    },
+    {
+      "label": "DROP 1 (again)",
+      "mechanism": "dropper",
+      "setpoint": "SETPOINT_1",
+      "type": "actuate"
+    },
+    {
+      "label": "Wait",
+      "seconds": 1,
+      "type": "wait"
+    },
+    {
+      "label": "DROP 2 (again)",
+      "mechanism": "dropper",
+      "setpoint": "SETPOINT_2",
+      "type": "actuate"
+    },
+    {
+      "label": "Wait",
+      "seconds": 1,
+      "type": "wait"
+    },
+    {
+      "label": "Move to Octagon halfway",
+      "offset": [
+        17,
+        -2,
+        -1,
+        0,
+        0,
+        0
+      ],
+      "reference": "start",
+      "target_pose": [
+        17,
+        -2,
+        -1,
+        0,
+        0,
+        0
+      ],
+      "target_velocity": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "type": "move_to"
+    },
+    {
+      "label": "Wait",
+      "seconds": 3,
+      "type": "wait"
+    },
+    {
+      "label": "Move to Octagon",
+      "offset": [
+        0,
+        0,
+        -1,
+        0,
+        0,
+        0
+      ],
+      "reference": "octagon",
+      "target_pose": [
+        19.25,
+        0,
+        -1,
+        0,
+        0,
+        -0.7853953071795864
+      ],
+      "target_velocity": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "type": "move_to"
+    },
+    {
+      "label": "Wait",
+      "seconds": 3,
+      "type": "wait"
+    },
+    {
+      "label": "Rise",
+      "offset": [
+        0,
+        0,
+        -0.3,
+        0,
+        0,
+        0
+      ],
+      "reference": "octagon",
+      "target_pose": [
+        2.67,
+        4.77,
+        -0.3,
+        0,
+        0,
+        0.785
+      ],
+      "target_velocity": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "type": "move_to"
+    },
+    {
+      "label": "Wait",
+      "seconds": 3,
+      "type": "wait"
+    },
+    {
+      "label": "Rise 2",
+      "offset": [
+        0,
+        0,
+        -0.15,
+        0,
+        0,
+        0
+      ],
+      "reference": "octagon",
+      "target_pose": [
+        2.703,
+        4.5,
+        -0.15,
+        0,
+        0,
+        0.785
+      ],
+      "target_velocity": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "type": "move_to"
+    },
+    {
+      "label": "Wait",
+      "seconds": 3,
+      "type": "wait"
+    }
+  ],
+  "positions_file": "D",
+  "name": "D"
+}

@@ -10,13 +10,18 @@ Publishes:
   /setpoint/accel  (geometry_msgs/AccelStamped): Acceleration at that setpoint
 
 Parameters:
-  speed_mps        (double,  default 0.5): cruise speed used to time the maneuver
-  resolution_sec   (double,  default 0.1): path sample spacing, in seconds
-  lookahead_dist   (double,  default 0.5): Pure Pursuit lookahead distance, in meters
-  use_target_vel   (bool,   default True): match target velocity, or come to rest
-  control_rate_hz  (double, default 20.0): rate of the setpoint publish timer
+  speed_mps             (double,  default 0.75): cruise speed used to time the maneuver
+  resolution_sec        (double,  default 0.1): path sample spacing, in seconds
+  lookahead_dist        (double,  default 0.3): Pure Pursuit lookahead distance, in meters
+  use_target_vel        (bool,   default True): match target velocity, or come to rest
+  control_rate_hz       (double, default 20.0): rate of the setpoint publish timer
+  xy_threshold          (double,  default 0.1): horizontal (x/y) terminal tolerance, in meters
+  z_threshold           (double,  default 0.05): vertical (z) terminal tolerance, in meters
+  yaw_threshold_deg     (double,  default 5.0): yaw terminal tolerance, in degrees
+  roll_pitch_threshold_deg (double, default 10.0): roll & pitch terminal tolerance, in degrees
 """
 
+import math
 from typing import Optional
 
 import numpy as np
@@ -69,11 +74,16 @@ class CubicPursuitNode(Node):
     def __init__(self):
         super().__init__('cubic_pursuit_node')
 
-        self.declare_parameter('speed_mps', 0.5)
+        self.declare_parameter('speed_mps', 0.4)
         self.declare_parameter('resolution_sec', 0.1)
-        self.declare_parameter('lookahead_dist', 0.5)
+        self.declare_parameter('lookahead_dist', 0.3)
         self.declare_parameter('use_target_vel', True)
         self.declare_parameter('control_rate_hz', 20.0)
+        self.declare_parameter('xy_threshold', 0.05)
+        self.declare_parameter('z_threshold', 0.05)
+        self.declare_parameter('yaw_threshold_deg', 5.0)
+        self.declare_parameter('roll_pitch_threshold_deg', 10.0)
+        self.declare_parameter('path_mode', 'cubic_hermite')  # 'cubic_hermite' or 'straight_line'
 
         self._planner = PurePursuitPlanner()
         self._current_state: Optional[VehicleState] = None
@@ -102,10 +112,17 @@ class CubicPursuitNode(Node):
         speed = self.get_parameter('speed_mps').value
         res = self.get_parameter('resolution_sec').value
         use_target_vel = self.get_parameter('use_target_vel').value
+        path_mode = self.get_parameter('path_mode').value
 
-        self._planner.generate_path(self._current_state, target_state, speed, res, use_target_vel)
+        if path_mode == 'straight_line':
+            self._planner.generate_straight_line_path(
+                self._current_state, target_state, speed, res, use_target_vel)
+        else:
+            self._planner.generate_path(
+                self._current_state, target_state, speed, res, use_target_vel)
+
         self.get_logger().info(
-            f'Generated new cubic Hermite path, duration={self._planner.duration:.2f}s.')
+            f'Generated new {path_mode} path, duration={self._planner.duration:.2f}s.')
 
     def _on_timer(self) -> None:
         if self._current_state is None or not self._planner.has_active_path():
@@ -115,7 +132,15 @@ class CubicPursuitNode(Node):
         msg.id = "trajectory"
 
         lookahead_dist = self.get_parameter('lookahead_dist').value
-        setpoint = self._planner.get_lookahead_setpoint(self._current_state.position, lookahead_dist)
+        xy_tol = self.get_parameter('xy_threshold').value
+        z_tol = self.get_parameter('z_threshold').value
+        yaw_tol = math.radians(self.get_parameter('yaw_threshold_deg').value)
+        roll_pitch_tol = math.radians(self.get_parameter('roll_pitch_threshold_deg').value)
+
+        setpoint = self._planner.get_lookahead_setpoint(
+            self._current_state, lookahead_dist,
+            xy_tol=xy_tol, z_tol=z_tol,
+            yaw_tol=yaw_tol, roll_pitch_tol=roll_pitch_tol)
 
         if setpoint is None:
             msg.status = 1

@@ -1,0 +1,215 @@
+{
+  "steps": [
+    {
+      "label": "Wait",
+      "seconds": 20,
+      "type": "wait"
+    },
+    {
+      "label": "Submerge",
+      "offset": [
+        1,
+        0,
+        -1,
+        0,
+        0,
+        0
+      ],
+      "reference": "start",
+      "target_pose": [
+        1,
+        0,
+        -1,
+        0,
+        0,
+        0
+      ],
+      "target_velocity": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "type": "move_to"
+    },
+    {
+      "label": "Wait",
+      "seconds": 3,
+      "type": "wait"
+    },
+    {
+      "label": "Forwards",
+      "offset": [
+        2,
+        0,
+        -1,
+        0,
+        0,
+        0
+      ],
+      "reference": "start",
+      "target_pose": [
+        2,
+        0,
+        -1,
+        0,
+        0,
+        0
+      ],
+      "target_velocity": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "type": "move_to"
+    },
+    {
+      "label": "Wait",
+      "seconds": 3,
+      "type": "wait"
+    },
+    {
+      "label": "Rise",
+      "offset": [
+        2,
+        0,
+        -0.3,
+        0,
+        0,
+        0.785
+      ],
+      "reference": "start",
+      "target_pose": [
+        2,
+        0,
+        -0.3,
+        0,
+        0,
+        0.785
+      ],
+      "target_velocity": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "type": "move_to"
+    },
+    {
+      "label": "Wait",
+      "seconds": 3,
+      "type": "wait"
+    },
+    {
+      "type": "move_to",
+      "label": "Rise 2",
+      "reference": "start",
+      "offset": [
+        3,
+        0,
+        -0.15,
+        0,
+        0,
+        0.785
+      ],
+      "target_pose": [
+        3,
+        0,
+        -0.15,
+        0,
+        0,
+        0.785
+      ],
+      "target_velocity": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "type": "wait",
+      "label": "Wait",
+      "seconds": 3
+    },
+    {
+      "label": "Down",
+      "offset": [
+        2,
+        0,
+        -1,
+        0,
+        0,
+        0.785
+      ],
+      "reference": "start",
+      "target_pose": [
+        2,
+        0,
+        -1,
+        0,
+        0,
+        0.785
+      ],
+      "target_velocity": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "type": "move_to"
+    },
+    {
+      "label": "Wait",
+      "seconds": 3,
+      "type": "wait"
+    },
+    {
+      "label": "Backwards",
+      "offset": [
+        1,
+        0,
+        -1,
+        0,
+        0,
+        0
+      ],
+      "reference": "start",
+      "target_pose": [
+        1,
+        0,
+        -1,
+        0,
+        0,
+        0
+      ],
+      "target_velocity": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "type": "move_to"
+    },
+    {
+      "command": "bash -c \"ros2 topic pub --once /mission/status tauv_msgs/msg/Status \\\"{id: 'command', status: 1}\\\" ; ros2 topic pub --once /watchdog/system_state std_msgs/msg/String \\\"{data: 'kill'}\\\"\"",
+      "label": "Kill",
+      "type": "cli"
+    }
+  ],
+  "positions_file": "bnb",
+  "name": "octagontest"
+}

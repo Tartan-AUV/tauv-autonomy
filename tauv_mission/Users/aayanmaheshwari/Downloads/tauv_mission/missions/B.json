@@ -1,0 +1,278 @@
+{
+  "steps": [
+    {
+      "label": "Wait",
+      "seconds": 20,
+      "type": "wait"
+    },
+    {
+      "label": "Submerge",
+      "offset": [
+        1,
+        0,
+        -1,
+        0,
+        0,
+        0
+      ],
+      "reference": "start",
+      "target_pose": [
+        1,
+        0,
+        -1,
+        0,
+        0,
+        0
+      ],
+      "target_velocity": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "type": "move_to"
+    },
+    {
+      "label": "Wait",
+      "seconds": 3,
+      "type": "wait"
+    },
+    {
+      "label": "Slalom Prime",
+      "offset": [
+        -1,
+        1,
+        -1,
+        0,
+        0,
+        0
+      ],
+      "reference": "slalom0",
+      "target_pose": [
+        4,
+        -1,
+        -1,
+        0,
+        0,
+        0
+      ],
+      "target_velocity": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "type": "move_to"
+    },
+    {
+      "label": "Wait",
+      "seconds": 3,
+      "type": "wait"
+    },
+    {
+      "label": "First Slalom",
+      "offset": [
+        1,
+        1,
+        -1,
+        0,
+        0,
+        0
+      ],
+      "reference": "slalom0",
+      "target_pose": [
+        6,
+        -1,
+        -1,
+        0,
+        0,
+        0
+      ],
+      "target_velocity": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "type": "move_to"
+    },
+    {
+      "label": "Wait",
+      "seconds": 3,
+      "type": "wait"
+    },
+    {
+      "label": "Second Slalom",
+      "offset": [
+        1,
+        1,
+        -1,
+        0,
+        0,
+        0
+      ],
+      "reference": "slalom1",
+      "target_pose": [
+        7.75,
+        -0.8,
+        -1,
+        0,
+        0,
+        0
+      ],
+      "target_velocity": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "type": "move_to"
+    },
+    {
+      "label": "Wait",
+      "seconds": 3,
+      "type": "wait"
+    },
+    {
+      "label": "Third Slalom",
+      "offset": [
+        1,
+        1,
+        -1,
+        0,
+        0,
+        0
+      ],
+      "reference": "slalom2",
+      "target_pose": [
+        9.5,
+        -0.6499999999999999,
+        -1,
+        0,
+        0,
+        0
+      ],
+      "target_velocity": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "type": "move_to"
+    },
+    {
+      "label": "Wait",
+      "seconds": 3,
+      "type": "wait"
+    },
+    {
+      "label": "Slalom Leave",
+      "offset": [
+        12,
+        1,
+        -1,
+        0,
+        0,
+        0
+      ],
+      "reference": "start",
+      "target_pose": [
+        12,
+        1,
+        -1,
+        0,
+        0,
+        0
+      ],
+      "target_velocity": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "type": "move_to"
+    },
+    {
+      "label": "Wait",
+      "seconds": 3,
+      "type": "wait"
+    },
+    {
+      "label": "Home Halfway",
+      "offset": [
+        6,
+        0,
+        -1,
+        0,
+        0,
+        0
+      ],
+      "reference": "start",
+      "target_pose": [
+        6,
+        0,
+        -1,
+        0,
+        0,
+        0
+      ],
+      "target_velocity": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "type": "move_to"
+    },
+    {
+      "label": "Wait",
+      "seconds": 3,
+      "type": "wait"
+    },
+    {
+      "label": "Home",
+      "offset": [
+        1,
+        0,
+        -1,
+        0,
+        0,
+        0
+      ],
+      "reference": "start",
+      "target_pose": [
+        1,
+        0,
+        -1,
+        0,
+        0,
+        0
+      ],
+      "target_velocity": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "type": "move_to"
+    }
+  ],
+  "positions_file": "B",
+  "name": "B"
+}

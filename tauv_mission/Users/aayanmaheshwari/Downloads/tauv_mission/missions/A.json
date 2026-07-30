@@ -1,0 +1,614 @@
+{
+  "steps": [
+    {
+      "label": "Wait",
+      "seconds": 45,
+      "type": "wait"
+    },
+    {
+      "label": "New waypoint",
+      "offset": [
+        -1,
+        0,
+        -1,
+        0,
+        0,
+        0
+      ],
+      "reference": "gate",
+      "target_pose": [
+        2.4,
+        0.652,
+        -1,
+        0,
+        0,
+        0
+      ],
+      "target_velocity": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "type": "move_to"
+    },
+    {
+      "label": "Wait",
+      "seconds": 5,
+      "type": "wait"
+    },
+    {
+      "label": "New waypoint",
+      "offset": [
+        2,
+        0,
+        -1,
+        0,
+        0,
+        0
+      ],
+      "reference": "gate",
+      "target_pose": [
+        5.4,
+        0.652,
+        -1,
+        0,
+        0,
+        0
+      ],
+      "target_velocity": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "type": "move_to"
+    },
+    {
+      "label": "Wait",
+      "seconds": 5,
+      "type": "wait"
+    },
+    {
+      "label": "New waypoint",
+      "offset": [
+        2,
+        4,
+        -1,
+        0,
+        0,
+        0
+      ],
+      "reference": "gate",
+      "target_pose": [
+        5.4,
+        4.652,
+        -1,
+        0,
+        0,
+        0
+      ],
+      "target_velocity": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "type": "move_to"
+    },
+    {
+      "label": "Wait",
+      "seconds": 5,
+      "type": "wait"
+    },
+    {
+      "type": "move_to",
+      "label": "New waypoint",
+      "reference": "gate",
+      "offset": [
+        6,
+        4,
+        -1,
+        0,
+        0,
+        0
+      ],
+      "target_pose": [
+        9.4,
+        4.652,
+        -1,
+        0,
+        0,
+        0
+      ],
+      "target_velocity": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "type": "wait",
+      "label": "Wait",
+      "seconds": 5
+    },
+    {
+      "label": "New waypoint",
+      "offset": [
+        -2,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "reference": "banner0",
+      "target_pose": [
+        14.440000000000001,
+        5.6,
+        -1,
+        0,
+        0,
+        0
+      ],
+      "target_velocity": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "type": "move_to"
+    },
+    {
+      "command": "ros2 topic pub --once /mission/status tauv_msgs/msg/Status \"{id: 'command', status: 1}\" && sleep 3 && ros2 topic pub --once /mission/status tauv_msgs/msg/Status \"{id: 'command', status: 1}\"",
+      "label": "CLI command",
+      "type": "cli"
+    },
+    {
+      "command": "ros2 run tauv_vision bannerTask",
+      "label": "Vision",
+      "type": "cli"
+    },
+    {
+      "label": "Wait",
+      "seconds": 15,
+      "type": "wait"
+    },
+    {
+      "label": "Stop CLI",
+      "target": "Vision",
+      "type": "cli_stop"
+    },
+    {
+      "label": "New waypoint",
+      "offset": [
+        -0.5,
+        0.09303,
+        0.09605,
+        0,
+        0,
+        0
+      ],
+      "reference": "banner3",
+      "target_pose": [
+        15.940000000000001,
+        5.693029999999999,
+        -0.90395,
+        0,
+        0,
+        0
+      ],
+      "target_velocity": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "type": "move_to"
+    },
+    {
+      "label": "Wait",
+      "seconds": 3,
+      "type": "wait"
+    },
+    {
+      "label": "New actuation",
+      "mechanism": "torpedo",
+      "setpoint": "SETPOINT_1",
+      "type": "actuate"
+    },
+    {
+      "label": "Wait",
+      "seconds": 2,
+      "type": "wait"
+    },
+    {
+      "label": "New waypoint",
+      "offset": [
+        -0.5,
+        0.09303,
+        0.09605,
+        0,
+        0,
+        0
+      ],
+      "reference": "banner2",
+      "target_pose": [
+        15.940000000000001,
+        5.693029999999999,
+        -0.90395,
+        0,
+        0,
+        0
+      ],
+      "target_velocity": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "type": "move_to"
+    },
+    {
+      "label": "Wait",
+      "seconds": 3,
+      "type": "wait"
+    },
+    {
+      "label": "New actuation",
+      "mechanism": "torpedo",
+      "setpoint": "SETPOINT_2",
+      "type": "actuate"
+    },
+    {
+      "label": "Wait",
+      "seconds": 2,
+      "type": "wait"
+    },
+    {
+      "label": "New waypoint",
+      "offset": [
+        -2,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "reference": "banner0",
+      "target_pose": [
+        14.440000000000001,
+        5.6,
+        -1,
+        0,
+        0,
+        0
+      ],
+      "target_velocity": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "type": "move_to"
+    },
+    {
+      "label": "Wait",
+      "seconds": 5,
+      "type": "wait"
+    },
+    {
+      "label": "New waypoint",
+      "offset": [
+        0,
+        0,
+        -0.8,
+        0,
+        0,
+        0
+      ],
+      "reference": "bins0",
+      "target_pose": [
+        19.32,
+        -2.93,
+        -0.8,
+        0,
+        0,
+        0
+      ],
+      "target_velocity": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "type": "move_to"
+    },
+    {
+      "label": "Wait",
+      "seconds": 2,
+      "type": "wait"
+    },
+    {
+      "label": "New actuation",
+      "mechanism": "dropper",
+      "setpoint": "SETPOINT_1",
+      "type": "actuate"
+    },
+    {
+      "label": "Wait",
+      "seconds": 3,
+      "type": "wait"
+    },
+    {
+      "label": "New actuation",
+      "mechanism": "dropper",
+      "setpoint": "SETPOINT_2",
+      "type": "actuate"
+    },
+    {
+      "label": "Wait",
+      "seconds": 2,
+      "type": "wait"
+    },
+    {
+      "label": "New waypoint",
+      "offset": [
+        0,
+        0,
+        -0.8,
+        0,
+        0,
+        0
+      ],
+      "reference": "octagon",
+      "target_pose": [
+        18.93,
+        2.4,
+        -0.8,
+        0,
+        0,
+        0
+      ],
+      "target_velocity": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "type": "move_to"
+    },
+    {
+      "label": "Wait",
+      "seconds": 5,
+      "type": "wait"
+    },
+    {
+      "label": "New waypoint",
+      "offset": [
+        0,
+        0,
+        -0.3,
+        0,
+        0,
+        0
+      ],
+      "reference": "octagon",
+      "target_pose": [
+        18.93,
+        2.4,
+        -0.3,
+        0,
+        0,
+        0
+      ],
+      "target_velocity": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "type": "move_to"
+    },
+    {
+      "label": "Wait",
+      "seconds": 5,
+      "type": "wait"
+    },
+    {
+      "label": "New waypoint",
+      "offset": [
+        0,
+        0,
+        -0.8,
+        0,
+        0,
+        0
+      ],
+      "reference": "octagon",
+      "target_pose": [
+        18.93,
+        2.4,
+        -0.8,
+        0,
+        0,
+        0
+      ],
+      "target_velocity": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "type": "move_to"
+    },
+    {
+      "label": "Wait",
+      "seconds": 5,
+      "type": "wait"
+    },
+    {
+      "label": "New waypoint",
+      "offset": [
+        -4,
+        4,
+        -1,
+        0,
+        0,
+        0
+      ],
+      "reference": "octagon",
+      "target_pose": [
+        14.93,
+        6.4,
+        -1,
+        0,
+        0,
+        0
+      ],
+      "target_velocity": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "type": "move_to"
+    },
+    {
+      "label": "Wait",
+      "seconds": 5,
+      "type": "wait"
+    },
+    {
+      "label": "New waypoint",
+      "offset": [
+        2,
+        4,
+        -1,
+        0,
+        0,
+        0
+      ],
+      "reference": "gate",
+      "target_pose": [
+        5.4,
+        4.652,
+        -1,
+        0,
+        0,
+        0
+      ],
+      "target_velocity": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "type": "move_to"
+    },
+    {
+      "label": "Wait",
+      "seconds": 5,
+      "type": "wait"
+    },
+    {
+      "label": "New waypoint",
+      "offset": [
+        2,
+        0,
+        -1,
+        0,
+        0,
+        0
+      ],
+      "reference": "gate",
+      "target_pose": [
+        5.4,
+        0.652,
+        -1,
+        0,
+        0,
+        0
+      ],
+      "target_velocity": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "type": "move_to"
+    },
+    {
+      "label": "Wait",
+      "seconds": 5,
+      "type": "wait"
+    },
+    {
+      "label": "New waypoint",
+      "offset": [
+        -1,
+        0,
+        -1,
+        0,
+        0,
+        0
+      ],
+      "reference": "gate",
+      "target_pose": [
+        2.4,
+        0.652,
+        -1,
+        0,
+        0,
+        0
+      ],
+      "target_velocity": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "type": "move_to"
+    },
+    {
+      "command": "ros2 topic pub --once /watchdog/system_state std_msgs/msg/String \"{data: 'bad'}\"",
+      "label": "Kill",
+      "type": "cli"
+    }
+  ],
+  "positions_file": "A",
+  "name": "A"
+}

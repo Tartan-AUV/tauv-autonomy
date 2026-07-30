@@ -1,0 +1,451 @@
+{
+  "steps": [
+    {
+      "label": "Wait",
+      "seconds": 20,
+      "type": "wait"
+    },
+    {
+      "label": "Submerge",
+      "offset": [
+        1,
+        0,
+        -1,
+        0,
+        0,
+        0
+      ],
+      "reference": "start",
+      "target_pose": [
+        1,
+        0,
+        -1,
+        0,
+        0,
+        0
+      ],
+      "target_velocity": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "type": "move_to"
+    },
+    {
+      "label": "Wait",
+      "seconds": 3,
+      "type": "wait"
+    },
+    {
+      "label": "Banner Prepare",
+      "offset": [
+        -2,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "reference": "banner0",
+      "target_pose": [
+        1.5857864376305137,
+        -1.4142135623767036,
+        -1,
+        0,
+        0,
+        0.7853981634
+      ],
+      "target_velocity": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "type": "move_to"
+    },
+    {
+      "command": "bash -c \"ros2 topic pub --once /mission/status tauv_msgs/msg/Status \\\"{id: 'command', status: 1}\\\" && sleep 3 && ros2 topic pub --once /mission/status tauv_msgs/msg/Status \\\"{id: 'command', status: 1}\\\"\"",
+      "label": "Funny CLI",
+      "type": "cli"
+    },
+    {
+      "command": "ros2 run tauv_vision bannerTask",
+      "label": "Start banner vision",
+      "type": "cli"
+    },
+    {
+      "label": "Wait",
+      "seconds": 10,
+      "type": "wait"
+    },
+    {
+      "label": "Banner Move Closer",
+      "offset": [
+        -1.2,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "reference": "banner0",
+      "target_pose": [
+        2.770000000006124,
+        0.9299999999999999,
+        -0.8,
+        0,
+        0,
+        1.5707963267999998
+      ],
+      "target_velocity": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "type": "move_to"
+    },
+    {
+      "command": "bash -c \"ros2 topic pub --once /mission/status tauv_msgs/msg/Status \\\"{id: 'command', status: 1}\\\" ; ros2 topic pub --once /vision/banner/control std_msgs/msg/String \\\"{data: 'reset'}\\\"\"",
+      "label": "Reset Vision",
+      "type": "cli"
+    },
+    {
+      "label": "Wait",
+      "seconds": 10,
+      "type": "wait"
+    },
+    {
+      "type": "cli",
+      "label": "Pause Vision",
+      "command": "bash -c \"ros2 topic pub --once /mission/status tauv_msgs/msg/Status \\\"{id: 'command', status: 1}\\\" ; ros2 topic pub --once /vision/banner/control std_msgs/msg/String \\\"{data: 'stop'}\\\"\""
+    },
+    {
+      "label": "Move to First Torpedo",
+      "offset": [
+        -0.7,
+        -0.11,
+        0.025,
+        0,
+        0,
+        0
+      ],
+      "reference": "banner0",
+      "target_pose": [
+        2.880000000003572,
+        1.4300000000005613,
+        -0.775,
+        0,
+        0,
+        1.5707963267999998
+      ],
+      "target_velocity": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "type": "move_to"
+    },
+    {
+      "label": "Wait",
+      "seconds": 3,
+      "type": "wait"
+    },
+    {
+      "label": "FIRE 1",
+      "mechanism": "torpedo",
+      "setpoint": "SETPOINT_1",
+      "type": "actuate"
+    },
+    {
+      "label": "Wait",
+      "seconds": 1,
+      "type": "wait"
+    },
+    {
+      "label": "Reset Torpedo",
+      "mechanism": "torpedo",
+      "setpoint": "RESET",
+      "type": "actuate"
+    },
+    {
+      "label": "Wait",
+      "seconds": 1,
+      "type": "wait"
+    },
+    {
+      "label": "Fire 1 (again)",
+      "mechanism": "torpedo",
+      "setpoint": "SETPOINT_1",
+      "type": "actuate"
+    },
+    {
+      "label": "Wait",
+      "seconds": 1,
+      "type": "wait"
+    },
+    {
+      "type": "move_to",
+      "label": "Banner Reset Position",
+      "reference": "banner0",
+      "offset": [
+        -1.2,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "target_pose": [
+        2.770000000006124,
+        0.9299999999999999,
+        -0.8,
+        0,
+        0,
+        1.5707963267999998
+      ],
+      "target_velocity": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "type": "cli",
+      "label": "Reset Vision x2",
+      "command": "bash -c \"ros2 topic pub --once /mission/status tauv_msgs/msg/Status \\\"{id: 'command', status: 1}\\\" ; ros2 topic pub --once /vision/banner/control std_msgs/msg/String \\\"{data: 'reset'}\\\"\""
+    },
+    {
+      "type": "cli",
+      "label": "Continue Vision",
+      "command": "bash -c \"ros2 topic pub --once /mission/status tauv_msgs/msg/Status \\\"{id: 'command', status: 1}\\\" ; ros2 topic pub --once /vision/banner/control std_msgs/msg/String \\\"{data: 'start'}\\\"\""
+    },
+    {
+      "type": "wait",
+      "label": "Wait",
+      "seconds": 10
+    },
+    {
+      "label": "Stop banner vision",
+      "target": "Start banner vision",
+      "type": "cli_stop"
+    },
+    {
+      "command": "bash -c \"ros2 topic pub --once /mission/status tauv_msgs/msg/Status \\\"{id: 'command', status: 1}\\\" ; pkill -f bannerTask\"",
+      "label": "Kill banner vision (again)",
+      "type": "cli"
+    },
+    {
+      "label": "Move to Second Torpedo",
+      "offset": [
+        -0.7,
+        -0.15,
+        0.025,
+        0,
+        0,
+        0
+      ],
+      "reference": "banner1",
+      "target_pose": [
+        2.920000000003572,
+        1.4300000000007653,
+        -0.775,
+        0,
+        0,
+        1.5707963267999998
+      ],
+      "target_velocity": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "type": "move_to"
+    },
+    {
+      "label": "Wait",
+      "seconds": 1,
+      "type": "wait"
+    },
+    {
+      "label": "FIRE 2",
+      "mechanism": "torpedo",
+      "setpoint": "SETPOINT_2",
+      "type": "actuate"
+    },
+    {
+      "label": "Wait",
+      "seconds": 1,
+      "type": "wait"
+    },
+    {
+      "label": "Reset Torpedo",
+      "mechanism": "torpedo",
+      "setpoint": "RESET",
+      "type": "actuate"
+    },
+    {
+      "label": "Wait",
+      "seconds": 1,
+      "type": "wait"
+    },
+    {
+      "label": "Fire 2 (again)",
+      "mechanism": "torpedo",
+      "setpoint": "SETPOINT_2",
+      "type": "actuate"
+    },
+    {
+      "label": "Wait",
+      "seconds": 1,
+      "type": "wait"
+    },
+    {
+      "label": "Reset Torpedo",
+      "mechanism": "torpedo",
+      "setpoint": "RESET",
+      "type": "actuate"
+    },
+    {
+      "label": "Come Back",
+      "offset": [
+        1,
+        0,
+        -1,
+        0,
+        0,
+        0
+      ],
+      "reference": "start",
+      "target_pose": [
+        1,
+        0,
+        -1,
+        0,
+        0,
+        0
+      ],
+      "target_velocity": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "type": "move_to"
+    },
+    {
+      "label": "Wait",
+      "seconds": 10,
+      "type": "wait"
+    },
+    {
+      "label": "Move To Bins",
+      "offset": [
+        -0.222,
+        0.2115,
+        -1,
+        0,
+        0,
+        0
+      ],
+      "reference": "bins0",
+      "target_pose": [
+        2.798,
+        -1.1385,
+        -1,
+        0,
+        0,
+        0
+      ],
+      "target_velocity": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "type": "move_to"
+    },
+    {
+      "label": "Wait",
+      "seconds": 3,
+      "type": "wait"
+    },
+    {
+      "label": "DROP 1",
+      "mechanism": "dropper",
+      "setpoint": "SETPOINT_1",
+      "type": "actuate"
+    },
+    {
+      "label": "Wait",
+      "seconds": 10,
+      "type": "wait"
+    },
+    {
+      "label": "DROP 2",
+      "mechanism": "dropper",
+      "setpoint": "SETPOINT_2",
+      "type": "actuate"
+    },
+    {
+      "label": "Wait",
+      "seconds": 1,
+      "type": "wait"
+    },
+    {
+      "label": "Come Back",
+      "offset": [
+        1,
+        0,
+        -1,
+        0,
+        0,
+        0
+      ],
+      "reference": "start",
+      "target_pose": [
+        1,
+        0,
+        -1,
+        0,
+        0,
+        0
+      ],
+      "target_velocity": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "type": "move_to"
+    },
+    {
+      "command": "ros2 topic pub /watchdog/system_state std_msgs/msg/String \"{data: 'bad'}\"",
+      "label": "Kill",
+      "type": "cli"
+    }
+  ],
+  "positions_file": "bnb",
+  "name": "torpedotest"
+}

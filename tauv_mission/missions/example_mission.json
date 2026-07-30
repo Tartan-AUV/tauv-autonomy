@@ -1,27 +1,129 @@
 {
-  "name": "example_mission",
   "steps": [
     {
-      "type": "move_to",
-      "label": "Approach gate",
-      "reference": "gate",
-      "offset": [0.0, 1.0, 0.0, 0.0, 0.0, 0.0],
-      "target_pose": [10.0, 11.0, 1.0, 0.0, 0.0, 0.0],
-      "target_velocity": [1.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+      "label": "Wait",
+      "seconds": 25,
+      "type": "wait"
     },
     {
-      "type": "move_to",
-      "label": "Rise over bins",
-      "reference": "bins",
-      "offset": [0.0, 0.0, 1.0, 0.0, 0.0, 0.0],
-      "target_pose": [10.0, 10.0, 2.0, 0.0, 0.0, 0.0],
-      "target_velocity": [0.0, 0.0, 0.1, 0.0, 0.0, 0.0]
+      "label": "Submerge",
+      "offset": [
+        1,
+        0,
+        -1,
+        0,
+        0,
+        0
+      ],
+      "reference": "start",
+      "target_pose": [
+        1,
+        0,
+        -1,
+        0,
+        0,
+        0
+      ],
+      "target_velocity": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "type": "move_to"
+    },
+    {
+      "label": "Wait",
+      "seconds": 5,
+      "type": "wait"
+    },
+    {
+      "label": "Line up",
+      "offset": [
+        -1,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "reference": "banner0",
+      "target_pose": [
+        2.292893218815257,
+        -0.7071067811883518,
+        -1,
+        0,
+        0,
+        0.7853981634
+      ],
+      "target_velocity": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "type": "move_to"
+    },
+    {
+      "label": "Wait",
+      "seconds": 10,
+      "type": "wait"
+    },
+    {
+      "label": "Line Up 2",
+      "offset": [
+        -1,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "reference": "banner0",
+      "target_pose": [
+        2.292893218815257,
+        -0.7071067811883518,
+        -1,
+        0,
+        0,
+        0.7853981634
+      ],
+      "target_velocity": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "type": "move_to"
+    },
+    {
+      "label": "Wait",
+      "seconds": 5,
+      "type": "wait"
+    },
+    {
+      "label": "Fire",
+      "mechanism": "torpedo",
+      "setpoint": "SETPOINT_1",
+      "type": "actuate"
+    },
+    {
+      "type": "wait",
+      "label": "Wait",
+      "seconds": 2
     },
     {
       "type": "actuate",
-      "label": "Drop marker",
-      "setpoint": "RESET",
-      "mechanism": "dropper"
+      "label": "Wait",
+      "mechanism": "torpedo",
+      "setpoint": "RESET"
     }
-  ]
+  ],
+  "name": "example_mission"
 }

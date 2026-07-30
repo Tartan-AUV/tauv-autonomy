@@ -49,24 +49,24 @@ class Controller(Node):
         self.setpoint = None
 
         self.pid_pos = {
-            'x':     PIDController(kp=1.1, kd=0.1),
-            'y':     PIDController(kp=10, ki=1, kd=0.3),
-            'z':     PIDController(kp=10, kd=0.6),
-            'roll':  PIDController(kp=1.1, kd=0.1),
-            'pitch': PIDController(kp=0.2, kd=0.2),
-            'yaw':   PIDController(kp=1.1, kd=0.1)
+            'x':     PIDController(kp=2.5, kd=0.1),
+            'y':     PIDController(kp=2.5, kd=0.1),
+            'z':     PIDController(kp=15.0, kd=0.6),
+            'roll':  PIDController(kp=10.0, kd=3.0),
+            'pitch': PIDController(kp=1.0, kd=0.1),
+            'yaw':   PIDController(kp=2.5)
         }
 
         self.pid_vel = {
-            'x':     PIDController(kp=9.0, ki=0.1),
-            'y':     PIDController(kp=9.0, ki=0.1),
-            'z':     PIDController(kp=10.0, ki=0.1, kd=3.0, ff=-26),
-            'roll':  PIDController(kp=9.0, ki=0.1, kd=2.0),
-            'pitch': PIDController(kp=25.0, ki=0.1, kd=2.0),
-            'yaw':   PIDController(kp=9.0, ki=0.1, kd=2.0)
+            'x':     PIDController(kp=60.0, kd=0.2),
+            'y':     PIDController(kp=60.0, ki=0.2),
+            'z':     PIDController(kp=60.0, kd=3.0, ff=-26),
+            'roll':  PIDController(kp=1.0, kd=0.1, ff=1.0),
+            'pitch': PIDController(kp=3.0),
+            'yaw':   PIDController(kp=2.0, kd=0.1)
         }
 
-        self.load_pid_data()
+        # self.load_pid_data()
         if self.tune:
             for axis in ['z', 'roll', 'pitch']:
                 self.pid_vel[axis].kp = 0.0
@@ -255,8 +255,8 @@ class Controller(Node):
         # self.publish_current_pid_gains()
 
         # --- 4. OUTER LOOP: POSITION -> VELOCITY ---
-        max_lin = 4
-        max_ang = 2
+        max_lin = 0.5 # m/s
+        max_ang = 2 # rad/s
 
         # Include velocity feedforward directly into the commanded velocity calculations
         cmd_lin_vel_x_world = np.clip(self.pid_pos['x'].compute(err_x_world, 0.0, dt, cur_lin_vel_world[0]) + des_lin_vel_world[0], -max_lin, max_lin)

@@ -1,7 +1,7 @@
 import numpy as np
 
 def build_tam():
-    com = np.array([0.0, 0.0, 0.076])
+    com = np.array([0.0, 0.01, 0.066])
     raw_pos = np.array([
         [ 0.227, -0.225,  0.079], # 0: FRH
         [ 0.240,  0.212,  0.079], # 1: FLH

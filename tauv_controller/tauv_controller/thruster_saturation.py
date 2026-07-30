@@ -4,7 +4,7 @@ from geometry_msgs.msg import Wrench
 import numpy as np
 
 
-MAXFORCE = 37.0
+MAXFORCE = 30.0
 
 def resolve_wrenches(wrenches_dict):
     """
