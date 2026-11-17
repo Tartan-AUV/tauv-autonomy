@@ -207,8 +207,10 @@ class Controller(Node):
             self.setpoint.twist.twist.angular.z
         ])
 
-        des_lin_vel_world = R_des_body_to_world @ des_lin_vel_body
-        des_ang_vel_world = R_des_body_to_world @ des_ang_vel_body
+        # des_lin_vel_world = R_des_body_to_world @ des_lin_vel_body
+        # des_ang_vel_world = R_des_body_to_world @ des_ang_vel_body
+        des_lin_vel_world = des_lin_vel_body
+        des_ang_vel_world = des_ang_vel_body
 
         # --- 3. CALCULATE ERRORS ---
 
